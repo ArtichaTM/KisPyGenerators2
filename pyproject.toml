@@ -1,0 +1,11 @@
+#[tool.coverage.report]
+#exclude_also = [
+#    ""
+#]
+[tool.coverage.run]
+include = [
+    "src/*"
+]
+
+[tool.coverage.json]
+output = ".github/workflows/coverage/info.json"
