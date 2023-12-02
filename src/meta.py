@@ -1,4 +1,4 @@
-from typing import Any, Generator, List, NamedTuple, Callable
+from typing import Any, Generator, List, NamedTuple, Callable, Union
 
 __all__ = (
     'TaskMeta',
@@ -59,3 +59,9 @@ class TaskMeta(type):
         cl = super().__new__(cls, name, bases, attrs)
         cls.all_tasks.append(cl)
         return cl
+
+    @classmethod
+    def find_task(cls, name: str) -> Union['TaskMeta', None]:
+        for task in cls.all_tasks:
+            if task.__qualname__ == name:
+                return task
