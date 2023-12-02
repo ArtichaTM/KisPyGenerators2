@@ -1,7 +1,7 @@
 from itertools import chain
 from typing import Generator, Any, Tuple, TypeVar, Union
 from io import StringIO
-from random import choices, randint, triangular
+from random import choices, triangular
 
 from .meta import TaskMeta, ValuesTuple
 
