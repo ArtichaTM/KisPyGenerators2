@@ -57,7 +57,8 @@ class TaskMeta(type):
         # Task.short_description()
         short_description = attrs.get('short_description', checker)
         assert short_description is not checker, f"No short_description method found {ending}"
-        assert isinstance(short_description, staticmethod), f"Short_description method should be static {ending}"
+        assert isinstance(short_description, staticmethod), \
+            f"Short_description method should be static {ending}"
 
         cl = super().__new__(cls, class_name, bases, attrs)
         cls.all_tasks.append(cl)

@@ -154,6 +154,8 @@ class Exercise:
             io.write(f"\n{' '*len(prefix)}".join(task.short_description()))
         io.write('\nПример ввода и вывода:')
         for example_checks in iterations_limit(self.check_values(), 2):
-            io.write(f'\nВходящие в генератор данные:    {example_checks.send} {len(example_checks.send)}')
-            io.write(f'\nВыходящие из генератора данные: {example_checks.awaited} {len(example_checks.awaited)}')
+            io.write(f'\nВходящие в генератор данные:    '
+                     f'{example_checks.send} {len(example_checks.send)}')
+            io.write(f'\nВыходящие из генератора данные: '
+                     f'{example_checks.awaited} {len(example_checks.awaited)}')
         return io.getvalue()
