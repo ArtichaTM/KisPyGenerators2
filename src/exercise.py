@@ -97,9 +97,9 @@ class Exercise:
     @classmethod
     def _random_all_length(
             cls,
-            values: list[type(T)],
+            values: List[type(T)],
             r: int
-    ) -> Generator[list[type(T)], None, None]:
+    ) -> Generator[List[type(T)], None, None]:
         if r == len(values):
             yield values
             return
@@ -108,7 +108,7 @@ class Exercise:
         yield from cls._random_all_length(values, r+1)
 
     @classmethod
-    def random_all_length(cls, values: list[type(T)]) -> Generator[list[type(T)], None, None]:
+    def random_all_length(cls, values: List[type(T)]) -> Generator[List[type(T)], None, None]:
         return cls._random_all_length(values, 1)
 
     @classmethod
