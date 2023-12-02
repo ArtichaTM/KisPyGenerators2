@@ -1,7 +1,7 @@
 from itertools import chain
 from typing import Generator, Any, Tuple, TypeVar, Union
 from io import StringIO
-from random import choices, triangular
+from random import choices, randint, triangular
 
 from .meta import TaskMeta, ValuesTuple
 
@@ -38,7 +38,6 @@ class TaskRange(metaclass=TaskMeta):
     @staticmethod
     def generator() -> _gen_annotation:
         start = yield
-        start -= 1
         end = yield
         while start <= end:
             yield start
@@ -46,19 +45,26 @@ class TaskRange(metaclass=TaskMeta):
 
     @classmethod
     def check_values(cls) -> Generator[ValuesTuple, None, None]:
+        # while True:
+        #     start = randint(-65536, 65536)
+        #     end = start + randint(0, 65536)
         yield from (
             ValuesTuple(
-                [1, 3, None, None, None],
-                [None, 0, 1, 2, 3]
+                [1, 3, None, None],
+                [None, 1, 2, 3]
             ),
             ValuesTuple(
-                [1, 4, None, None, None, None],
-                [None, 0, 1, 2, 3, 4]
+                [1, 4, None, None, None],
+                [None, 1, 2, 3, 4]
             ),
             ValuesTuple(
-                [123, 127, None, None, None, None, None],
-                [None, 122, 123, 124, 125, 126, 127]
+                [123, 127, None, None, None, None],
+                [None, 123, 124, 125, 126, 127]
             ),
+            # ValuesTuple(
+            #     [1, 1, None, ],
+            #     [None, 1, ]
+            # ),
         )
 
     @staticmethod

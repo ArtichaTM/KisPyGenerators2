@@ -16,8 +16,8 @@ class TestTaskRange(TestCase):
         gen = self.cl.generator()
         gen.send(None)
         gen.send(5)
-        gen.send(10)
-        for i in range(5, 11):
+        self.assertEqual(gen.send(11), 5)
+        for i in range(6, 12):
             answer = gen.send(None)
             self.assertEqual(answer, i)
 

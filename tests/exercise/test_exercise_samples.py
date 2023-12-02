@@ -19,7 +19,6 @@ class TestTaskRange(TestCase):
 
         def gen():
             start = yield
-            start -= 1
             end = yield
             while start <= end:
                 password = yield start
@@ -45,7 +44,6 @@ class TestTaskRange(TestCase):
 
         def gen():
             start = yield
-            start -= 1
             end = yield
             while start <= end:
                 value = yield start
