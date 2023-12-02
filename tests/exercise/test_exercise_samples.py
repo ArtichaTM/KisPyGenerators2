@@ -81,7 +81,6 @@ class TestTaskRange(TestCase):
         if cl_calculator is None:
             self.skipTest("Can't find task TaskCalculator")
         e = Exercise([cl_range, cl_password, cl_calculator, cl_calculator])
-        # print(e.description())
 
         def gen():
             start = yield
