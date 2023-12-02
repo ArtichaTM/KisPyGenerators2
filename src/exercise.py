@@ -95,7 +95,7 @@ class Exercise:
         return amount
 
     @classmethod
-    def _random_all_length(
+    def _random_all_length_recursive(
             cls,
             values: List[type(T)],
             r: int
@@ -108,14 +108,14 @@ class Exercise:
         yield from cls._random_all_length(values, r+1)
 
     @classmethod
-    def random_all_length(cls, values: List[type(T)]) -> Generator[List[type(T)], None, None]:
-        return cls._random_all_length(values, 1)
+    def _random_all_length(cls, values: List[type(T)]) -> Generator[List[type(T)], None, None]:
+        return cls._random_all_length_recursive(values, 1)
 
     @classmethod
     def random(cls) -> Generator['Exercise', None, None]:
         new_tasks = TaskMeta.all_tasks
         shuffle(new_tasks)
-        for tasks in cls.random_all_length(new_tasks):
+        for tasks in cls._random_all_length(new_tasks):
             yield Exercise(tasks)
 
     @classmethod
