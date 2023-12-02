@@ -1,8 +1,7 @@
 from unittest import TestCase
 from io import StringIO
 
-from src.meta import TaskMeta
-from src.exercise import Exercise
+from src import TaskMeta, Exercise
 
 
 class TestTaskRange(TestCase):

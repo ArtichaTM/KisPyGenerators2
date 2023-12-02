@@ -1,8 +1,7 @@
 from unittest import TestCase
 from random import choices, randint
 
-from src.meta import TaskMeta
-from src.exercise import Exercise
+from src import TaskMeta, Exercise
 
 
 class TestExercise(TestCase):

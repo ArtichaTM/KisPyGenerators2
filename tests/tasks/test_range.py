@@ -1,13 +1,19 @@
-from unittest import TestCase
+from unittest import TestCase, SkipTest
 
-from src.tasks import TaskRange, iterations_limit
+from src import TaskMeta, iterations_limit
 
 
 class TestTaskRange(TestCase):
-    __slots__ = ()
+    __slots__ = ('cl', )
+
+    @classmethod
+    def setUpClass(cls):
+        cls.cl = TaskMeta.find_task('TaskRange')
+        if cls.cl is None:
+            raise SkipTest("Can't find task TaskRange")
 
     def test_generator(self):
-        gen = TaskRange.generator()
+        gen = self.cl.generator()
         gen.send(None)
         gen.send(5)
         gen.send(10)
@@ -17,8 +23,8 @@ class TestTaskRange(TestCase):
 
     def test_check_generator(self):
         counter = 0
-        for value in iterations_limit(TaskRange.check_values(), 50):
-            gen = TaskRange.generator()
+        for value in iterations_limit(self.cl.check_values(), 50):
+            gen = self.cl.generator()
             gen.send(None)
             for send, awaited in zip(value.send, value.awaited):
                 self.assertEqual(gen.send(send), awaited, f"Error on {counter} values iteration")
