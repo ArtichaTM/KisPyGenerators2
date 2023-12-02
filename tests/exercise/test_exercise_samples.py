@@ -69,3 +69,68 @@ class TestTaskRange(TestCase):
             self.skipTest("Can't find task TaskCalculator")
         e = Exercise([cl_range, cl_calculator])
         self.assertEqual(cl_range.complexity + cl_calculator.complexity, e.complexity)
+
+    def test_range_password_calculator(self):
+        cl_range = TaskMeta.find_task('TaskRange')
+        cl_password = TaskMeta.find_task('TaskPassword')
+        cl_calculator = TaskMeta.find_task('TaskCalculator')
+        if cl_range is None:
+            self.skipTest("Can't find task TaskRange")
+        if cl_password is None:
+            self.skipTest("Can't find task TaskPassword")
+        if cl_calculator is None:
+            self.skipTest("Can't find task TaskCalculator")
+        e = Exercise([cl_range, cl_password, cl_calculator, cl_calculator])
+        # print(e.description())
+
+        def gen():
+            start = yield
+            start -= 1
+            end = yield
+            while start <= end:
+                password = yield start
+                start += 1
+            new_password = yield
+            while True:
+                if new_password == password:
+                    break
+                new_password = yield False
+            yield True
+            output = yield 0
+            while True:
+                values = yield output
+                if values is None:
+                    break
+                operation, new_number = values
+                if operation == '+':
+                    output += new_number
+                elif operation == '-':
+                    output -= new_number
+                elif operation == '/':
+                    if new_number == 0:
+                        continue
+                    output /= new_number
+                elif operation == '*':
+                    output *= new_number
+                if output == int(output):
+                    output = int(output)
+            output = yield 0
+            while True:
+                values = yield output
+                if values is None:
+                    break
+                operation, new_number = values
+                if operation == '+':
+                    output += new_number
+                elif operation == '-':
+                    output -= new_number
+                elif operation == '/':
+                    if new_number == 0:
+                        continue
+                    output /= new_number
+                elif operation == '*':
+                    output *= new_number
+                if output == int(output):
+                    output = int(output)
+
+        e.validate(gen, 50)
