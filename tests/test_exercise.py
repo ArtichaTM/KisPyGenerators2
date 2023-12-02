@@ -2,7 +2,6 @@ from unittest import TestCase
 from random import choices, randint
 
 from src.meta import TaskMeta
-from src.tasks import iterations_limit
 from src.exercise import Exercise
 
 

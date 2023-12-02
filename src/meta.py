@@ -49,7 +49,9 @@ class TaskMeta(type):
         # Task.check_values()
         check_values = attrs.get('check_values', checker)
         assert check_values is not checker, f"No check_values method found {ending}"
-        assert isinstance(check_values, classmethod), f"Check_values method should be classmethod {ending}"
+        assert \
+            isinstance(check_values, classmethod), \
+            f"Check_values method should be classmethod {ending}"
 
         # Implementing repr, if not overriden
         attrs.setdefault('__repr__', task_repr)

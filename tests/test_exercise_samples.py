@@ -1,7 +1,7 @@
 from unittest import TestCase
 from io import StringIO
 
-from src.tasks import *
+from src.tasks import TaskRange, TaskConcat, TaskPassword
 from src.exercise import Exercise
 
 
