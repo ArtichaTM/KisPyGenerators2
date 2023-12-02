@@ -1,7 +1,7 @@
 from unittest import TestCase
 from random import choices, randint, shuffle
 
-from src import TaskMeta, Exercise
+from kipygen import Exercise, TaskMeta
 
 
 class TestExercise(TestCase):

@@ -21,11 +21,8 @@ classifiers = [
     "Topic :: Education"
 ]
 
-[tool.hatch.build.sources]
-"src" = "kipygen"
-
 [tool.hatch.build]
-packages = ["src"]
+packages = ["src/kipygen"]
 
 [tool.coverage.run]
 include = [

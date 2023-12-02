@@ -1,7 +1,7 @@
 from unittest import TestCase
 from io import StringIO
 
-from src import TaskMeta, Exercise
+from kipygen import TaskMeta, Exercise
 
 
 class TestTaskRange(TestCase):

@@ -1,6 +1,6 @@
 from unittest import TestCase, SkipTest
 
-from src import TaskMeta, iterations_limit
+from kipygen import TaskMeta, iterations_limit
 
 
 class TestTaskRange(TestCase):
