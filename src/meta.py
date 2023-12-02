@@ -11,10 +11,6 @@ class ValuesTuple(NamedTuple):
     awaited: List[Any]
 
 
-def task_repr(self: 'TaskMeta') -> str:
-    return f"<{type(self).__qualname__} complexity={self.complexity}>"
-
-
 class TaskMeta(type):
     all_tasks: List['TaskMeta'] = []
     complexity: int
@@ -51,14 +47,14 @@ class TaskMeta(type):
         assert check_values is not checker, f"No check_values method found {ending}"
         assert \
             isinstance(check_values, classmethod), \
-            f"Check_values method should be classmethod {ending}"
-
-        # Implementing repr, if not overriden
-        attrs.setdefault('__repr__', task_repr)
+            f"Check_values method should be class method {ending}"
 
         cl = super().__new__(cls, name, bases, attrs)
         cls.all_tasks.append(cl)
         return cl
+
+    def __repr__(self):
+        return f"<{self.__qualname__} complexity={self.complexity}>"
 
     @classmethod
     def find_task(cls, name: str) -> Union['TaskMeta', None]:
