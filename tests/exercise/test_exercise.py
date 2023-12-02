@@ -47,8 +47,14 @@ class TestExercise(TestCase):
         self.random_range(5, 10)
 
     def test_description(self):
-        values = [*Exercise.random_range(3, 6)]
+        values = [*Exercise.random_range(8, 15)]
         shuffle(values)
-        print('Tasks amount:', len(values))
-        for i in values:
-            print(i.description(), '\n\n')
+        for exercise in values:
+            exercise_description = exercise.description()
+            for task in exercise.tasks:
+                for line in task.short_description():
+                    self.assertIn(
+                        line,
+                        exercise_description,
+                        f"Awaited line:\n> {line}\nText:\n>{exercise_description}"
+                    )
