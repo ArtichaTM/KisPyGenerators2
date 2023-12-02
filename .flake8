@@ -1,5 +1,2 @@
 [flake8]
 max-line-length = 99
-per-file-ignores =
-    # Imported but ignored
-    __init__.py: F401,F403
