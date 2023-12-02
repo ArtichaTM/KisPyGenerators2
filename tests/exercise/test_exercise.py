@@ -1,5 +1,5 @@
 from unittest import TestCase
-from random import choices, randint
+from random import choices, randint, shuffle
 
 from src import TaskMeta, Exercise
 
@@ -45,3 +45,10 @@ class TestExercise(TestCase):
         assert len(TaskMeta.all_tasks) >= 2
         self.random_range(1, 5)
         self.random_range(5, 10)
+
+    def test_description(self):
+        values = [*Exercise.random_range(3, 6)]
+        shuffle(values)
+        print('Tasks amount:', len(values))
+        for i in values:
+            print(i.description(), '\n\n')

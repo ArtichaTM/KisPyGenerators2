@@ -1,3 +1,4 @@
+from itertools import chain
 from typing import Generator, Any, Tuple, TypeVar, Union
 from io import StringIO
 from random import choices, triangular
@@ -60,6 +61,16 @@ class TaskRange(metaclass=TaskMeta):
             ),
         )
 
+    @staticmethod
+    def name() -> str:
+        return 'Диапазон'
+
+    @staticmethod
+    def short_description() -> tuple:
+        return (
+            "Нужно вернуть все целые числа в диапазоне [start, end]",
+        )
+
 
 class TaskConcat(metaclass=TaskMeta):
     complexity = 3
@@ -83,7 +94,11 @@ class TaskConcat(metaclass=TaskMeta):
     @classmethod
     def check_values(cls) -> Generator[ValuesTuple, None, None]:
         if cls._all_values is None:
-            cls._all_values = ''.join([chr(i) for i in range(0, 50000)])
+            cls._all_values = ''.join([chr(i) for i in chain(
+                range(48, 58),
+                range(65, 91),
+                range(100, 123)
+            )])
             cls._choices_max = int(len(cls._all_values) ** 0.5)
 
         while True:
@@ -97,6 +112,18 @@ class TaskConcat(metaclass=TaskMeta):
             output.send.append(None)
             output.awaited.append(local_io.getvalue())
             yield output
+
+    @staticmethod
+    def name() -> str:
+        return 'Конкатенация строк'
+
+    @staticmethod
+    def short_description() -> tuple:
+        return (
+            "В генератор передаются строки, которые нужно сложить. "
+            "При получении значения None вернуть полученную строку "
+            "и закончить работу",
+        )
 
 
 class TaskPassword(metaclass=TaskMeta):
@@ -137,6 +164,18 @@ class TaskPassword(metaclass=TaskMeta):
                 [checker, checker],
                 [None, True]
             ),
+        )
+
+    @staticmethod
+    def name() -> str:
+        return 'Пароль'
+
+    @staticmethod
+    def short_description() -> tuple:
+        return (
+            "В генератор передаётся пароль. Возвращать False до тех пор, "
+            "пока генератору не будет передан тот же пароль. В этом случае "
+            "вернуть True и закончить работу",
         )
 
 
@@ -193,4 +232,18 @@ class TaskCalculator(metaclass=TaskMeta):
                 [70, ('/', 0), ('+', 1), None],
                 [70, 70, 71]
             ),
+        )
+
+    @staticmethod
+    def name() -> str:
+        return 'Калькулятор'
+
+    @staticmethod
+    def short_description() -> tuple:
+        return (
+            "В первую очередь в генератор передаётся изначальное число, "
+            "над которым будут производится операции, возвращая его обратно. "
+            "Дальше в генератор будут передаваться пары (операция, число), где:",
+            "> число: любое число типа float или int",
+            "> операция: символ +, -, *, / для выполнения соответствующих операций"
         )

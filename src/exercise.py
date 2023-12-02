@@ -1,3 +1,4 @@
+from io import StringIO
 from typing import Generator, List, Callable, Tuple, TypeVar
 from random import shuffle
 from itertools import combinations
@@ -14,7 +15,9 @@ class Exercise:
     __slots__ = ('tasks', 'complexity')
 
     def __init__(self, tasks: List[TaskMeta]):
-        self.tasks = tasks
+        assert isinstance(tasks, (tuple, list))
+        assert tasks
+        self.tasks = tuple(tasks)
         self.complexity = sum((t.complexity for t in tasks))
 
     def __repr__(self) -> str:
@@ -67,7 +70,6 @@ class Exercise:
             send = []
             awaited = []
             for value_tuple in values_tuples:
-                assert len(value_tuple.send) == len(value_tuple.awaited)
                 send.extend(value_tuple.send)
                 awaited.extend(value_tuple.awaited)
             yield ValuesTuple(send, awaited)
@@ -127,3 +129,31 @@ class Exercise:
         for e in cls.random():
             if complexity_min <= e.complexity <= complexity_max:
                 yield e
+
+    def name(self) -> str:
+        return (
+            f"Упражнение с "
+            f"{len(self.tasks)} заданиями и "
+            f"{self.complexity} уровнем сложности")
+
+    def description(self) -> str:
+        assert len(TaskMeta.all_tasks) < 100
+        io = StringIO()
+        io.write('Перед вами стоит задача построить генератор, который ')
+        io.write('выполняет несколько последовательных задач:')
+        tabulation_amount = 2
+
+        # For numbers over 9
+        if len(self.tasks) // 10:
+            tabulation_amount += 1
+
+        for index, task in enumerate(self.tasks, start=1):
+            io.write('\n')
+            prefix = f"{index}. ".rjust(tabulation_amount+1)
+            io.write(prefix)
+            io.write(f"\n{' '*len(prefix)}".join(task.short_description()))
+        io.write('\nПример ввода и вывода:')
+        for example_checks in iterations_limit(self.check_values(), 2):
+            io.write(f'\nВходящие в генератор данные:    {example_checks.send} {len(example_checks.send)}')
+            io.write(f'\nВыходящие из генератора данные: {example_checks.awaited} {len(example_checks.awaited)}')
+        return io.getvalue()
