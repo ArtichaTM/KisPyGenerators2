@@ -1,7 +1,13 @@
-from typing import Generator, List, Callable, Tuple
+from typing import Generator, List, Callable, Tuple, TypeVar
+from random import shuffle
+from itertools import combinations
+from math import factorial
 
 from .meta import TaskMeta, ValuesTuple
 from .tasks import iterations_limit
+
+
+T = TypeVar('T')
 
 
 class Exercise:
@@ -12,7 +18,7 @@ class Exercise:
         self.complexity = sum((t.complexity for t in tasks))
 
     def __repr__(self) -> str:
-        return f"<Exercise with {len(self.tasks)} tasks and {self.complexity} complexity"
+        return f"<Exercise with {len(self.tasks)} tasks and {self.complexity} complexity>"
 
     def _validate_iteration(
             self,
@@ -76,3 +82,44 @@ class Exercise:
             if output:
                 return output
         return ''
+
+    @staticmethod
+    def combinations_amount() -> int:
+        n = len(TaskMeta.all_tasks)
+        amount = 0
+        for r in range(1, n+1):
+            left = factorial(n)
+            middle = factorial(r)
+            right = factorial(n-r)
+            amount += int(left / middle / right)
+        return amount
+
+    @classmethod
+    def _random_all_length(cls, values: list[type(T)], r: int) -> Generator[list[type(T)], None, None]:
+        if r == len(values):
+            yield values
+            return
+        for i in combinations(values, r):
+            yield i
+        yield from cls._random_all_length(values, r+1)
+
+    @classmethod
+    def random_all_length(cls, values: list[type(T)]) -> Generator[list[type(T)], None, None]:
+        return cls._random_all_length(values, 1)
+
+    @classmethod
+    def random(cls) -> Generator['Exercise', None, None]:
+        new_tasks = TaskMeta.all_tasks
+        shuffle(new_tasks)
+        for tasks in cls.random_all_length(new_tasks):
+            yield Exercise(tasks)
+
+    @classmethod
+    def random_range(
+            cls,
+            complexity_min: int = None,
+            complexity_max: int = None
+    ) -> Generator['Exercise', None, None]:
+        for e in cls.random():
+            if complexity_min <= e.complexity <= complexity_max:
+                yield e
