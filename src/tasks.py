@@ -1,4 +1,4 @@
-from typing import Generator, Any, TypeVar
+from typing import Generator, Any, Tuple, TypeVar, Union
 from io import StringIO
 from random import choices, triangular
 
@@ -9,6 +9,7 @@ __all__ = (
     'TaskPassword',
     'TaskRange',
     'TaskConcat',
+    'TaskCalculator',
     'iterations_limit',
 )
 
@@ -135,5 +136,61 @@ class TaskPassword(metaclass=TaskMeta):
             ValuesTuple(
                 [checker, checker],
                 [None, True]
+            ),
+        )
+
+
+class TaskCalculator(metaclass=TaskMeta):
+    complexity = 5
+    _number = Union[float, int]
+    _gen_annotation = Generator[_number, Tuple[str, _number], None]
+
+    @staticmethod
+    def generator() -> _gen_annotation:
+        output = yield 0
+        while True:
+            values = yield output
+            if values is None:
+                break
+            operation, new_number = values
+            if operation == '+':
+                output += new_number
+            elif operation == '-':
+                output -= new_number
+            elif operation == '/':
+                if new_number == 0:
+                    continue
+                output /= new_number
+            elif operation == '*':
+                output *= new_number
+            if output == int(output):
+                output = int(output)
+
+    @classmethod
+    def check_values(cls) -> Generator[ValuesTuple, None, None]:
+        yield from (
+            ValuesTuple(
+                [0, ('+', 5), None],
+                [0, 5]
+            ),
+            ValuesTuple(
+                [70, ('*', 2), None],
+                [70, 140]
+            ),
+            ValuesTuple(
+                [70, ('*', 2), ('-', 2), None],
+                [70, 140, 138]
+            ),
+            ValuesTuple(
+                [3, ('/', 2), ('*', 2), None],
+                [3, 1.5, 3]
+            ),
+            ValuesTuple(
+                [3, ('/', 2), ('*', 2), None],
+                [3, 1.5, 3]
+            ),
+            ValuesTuple(
+                [70, ('/', 0), ('+', 1), None],
+                [70, 70, 71]
             ),
         )
