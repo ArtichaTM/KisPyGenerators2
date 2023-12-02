@@ -56,7 +56,7 @@ class Exercise:
         :return: Generator of ValuesTuple[list, list]
         """
         all_check_values = [task.check_values() for task in self.tasks]
-        for values_tuples in zip(*all_check_values, strict=False):
+        for values_tuples in zip(*all_check_values):
             values_tuples: Tuple[ValuesTuple]
             send = []
             awaited = []
