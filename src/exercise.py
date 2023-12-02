@@ -105,7 +105,7 @@ class Exercise:
             return
         for i in combinations(values, r):
             yield i
-        yield from cls._random_all_length(values, r+1)
+        yield from cls._random_all_length_recursive(values, r+1)
 
     @classmethod
     def _random_all_length(cls, values: List[type(T)]) -> Generator[List[type(T)], None, None]:
