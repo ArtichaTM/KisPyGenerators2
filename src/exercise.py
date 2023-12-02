@@ -95,7 +95,11 @@ class Exercise:
         return amount
 
     @classmethod
-    def _random_all_length(cls, values: list[type(T)], r: int) -> Generator[list[type(T)], None, None]:
+    def _random_all_length(
+            cls,
+            values: list[type(T)],
+            r: int
+    ) -> Generator[list[type(T)], None, None]:
         if r == len(values):
             yield values
             return
