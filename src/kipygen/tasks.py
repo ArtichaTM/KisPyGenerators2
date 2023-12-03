@@ -61,10 +61,14 @@ class TaskRange(metaclass=TaskMeta):
                 [123, 127, None, None, None, None],
                 [None, 123, 124, 125, 126, 127]
             ),
-            # ValuesTuple(
-            #     [1, 1, None, ],
-            #     [None, 1, ]
-            # ),
+            ValuesTuple(
+                [1, 1],
+                [None, 1]
+            ),
+            ValuesTuple(
+                [0, 0],
+                [None, 0]
+            ),
         )
 
     @staticmethod
