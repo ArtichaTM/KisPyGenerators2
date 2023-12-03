@@ -14,7 +14,7 @@ class TestTaskCalculator(TestCase):
 
     def test_check_generator(self):
         iteration = 0
-        for value in iterations_limit(self.cl.check_values(), 50):
+        for value in iterations_limit(self.cl.check_values(), 500):
             gen = self.cl.generator()
             gen.send(None)
             for send, awaited in zip(value.send, value.awaited):

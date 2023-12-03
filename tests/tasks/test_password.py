@@ -29,7 +29,7 @@ class TestTaskPassword(TestCase):
                 gen.send(None)
 
     def test_check_generator(self):
-        for value in iterations_limit(self.cl.check_values(), 50):
+        for value in iterations_limit(self.cl.check_values(), 500):
             gen = self.cl.generator()
             gen.send(None)
             for iteration, send, awaited in zip(range(len(value.send)), value.send, value.awaited):
