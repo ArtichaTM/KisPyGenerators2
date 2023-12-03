@@ -74,7 +74,7 @@ class Exercise:
                 awaited.extend(value_tuple.awaited)
             yield ValuesTuple(send, awaited)
 
-    def validate(self, factory: Callable[[], Generator], max_iterations: int = 50) -> str:
+    def validate(self, factory: Callable[[], Generator], max_iterations: int = 500) -> str:
         assert isinstance(max_iterations, int)
         assert max_iterations > 1
 
