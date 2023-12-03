@@ -1,5 +1,5 @@
 from itertools import chain
-from typing import Generator, Any, Tuple, TypeVar, Union
+from typing import Generator, Any, List, Tuple, TypeVar, Union
 from io import StringIO
 from random import choices, choice, randint, triangular
 
@@ -39,37 +39,45 @@ class TaskRange(metaclass=TaskMeta):
     def generator() -> _gen_annotation:
         start = yield
         end = yield
+        yield
         while start <= end:
             yield start
             start += 1
 
     @classmethod
     def check_values(cls) -> Generator[ValuesTuple, None, None]:
-        # while True:
-        #     start = randint(-65536, 65536)
-        #     end = start + randint(0, 65536)
         yield from (
             ValuesTuple(
-                [1, 3, None, None],
-                [None, 1, 2, 3]
+                [1, 3, None, None, None],
+                [None, None, 1, 2, 3]
             ),
             ValuesTuple(
-                [1, 4, None, None, None],
-                [None, 1, 2, 3, 4]
+                [1, 4, None, None, None, None],
+                [None, None, 1, 2, 3, 4]
             ),
             ValuesTuple(
-                [123, 127, None, None, None, None],
-                [None, 123, 124, 125, 126, 127]
+                [123,  127, None, None, None, None, None],
+                [None, None, 123, 124, 125, 126, 127]
             ),
             ValuesTuple(
-                [1, 1],
-                [None, 1]
+                [1, 1, None],
+                [None, None, 1]
             ),
             ValuesTuple(
-                [0, 0],
-                [None, 0]
+                [0, 0, None],
+                [None, None, 0]
             ),
         )
+        while True:
+            start = randint(0, 65536)
+            end = start + randint(1, 5)
+            send: List[Union[int, None]] = [start, end]
+            awaited: List[Union[int, None]] = [None, None]
+            send.extend((None for _ in range(start, end+1)))
+            awaited.extend((range(start, end+1)))
+            print(send)
+            print(awaited)
+            yield ValuesTuple(send, awaited)
 
     @staticmethod
     def name() -> str:

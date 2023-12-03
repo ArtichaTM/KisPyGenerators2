@@ -14,10 +14,10 @@ class TestTaskRange(TestCase):
 
     def test_generator(self):
         gen = self.cl.generator()
-        gen.send(None)
-        gen.send(5)
-        self.assertEqual(gen.send(11), 5)
-        for i in range(6, 12):
+        self.assertEqual(gen.send(None), None)
+        self.assertEqual(gen.send(5), None)
+        self.assertEqual(gen.send(11), None)
+        for i in range(5, 12):
             answer = gen.send(None)
             self.assertEqual(answer, i)
 
