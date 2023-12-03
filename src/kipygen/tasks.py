@@ -99,6 +99,25 @@ class TaskConcat(metaclass=TaskMeta):
 
     @classmethod
     def check_values(cls) -> Generator[ValuesTuple, None, None]:
+        yield from (
+            ValuesTuple(
+                ['123', '45', '6789', None],
+                [None, None, None, '123456789']
+            ),
+            ValuesTuple(
+                ['Very', ' simple', ' example', None],
+                [None, None, None, 'Very simple example']
+            ),
+            ValuesTuple(
+                ['', '', None],
+                [None, None, '']
+            ),
+            ValuesTuple(
+                [None],
+                ['']
+            )
+        )
+
         if cls._all_values is None:
             cls._all_values = ''.join([chr(i) for i in chain(
                 range(48, 58),
