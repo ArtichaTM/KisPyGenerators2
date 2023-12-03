@@ -1,7 +1,7 @@
 from itertools import chain
 from typing import Generator, Any, Tuple, TypeVar, Union
 from io import StringIO
-from random import choices, triangular
+from random import choices, choice, randint, triangular
 
 from .meta import TaskMeta, ValuesTuple
 
@@ -238,7 +238,39 @@ class TaskCalculator(metaclass=TaskMeta):
                 [70, ('/', 0), ('+', 1), None],
                 [70, 70, 71]
             ),
+            ValuesTuple(
+                [70, None],
+                [70, ]
+            ),
         )
+        while True:
+            number = randint(-100, 100)
+            send = []
+            awaited = []
+
+            send.append(number)
+            awaited.append(number)
+
+            for _ in range(randint(0, 10)):
+                new_number = randint(-100, 100)
+                operation = choice(('+', '-', '*', '/'))
+                if operation == '+':
+                    number += new_number
+                elif operation == '-':
+                    number -= new_number
+                elif operation == '*':
+                    number *= new_number
+                else:
+                    if new_number == 0:
+                        continue
+                    number /= new_number
+                if int(number) == number:
+                    number = int(number)
+                send.append((operation, new_number))
+                awaited.append(number)
+
+            send.append(None)
+            yield ValuesTuple(send, awaited)
 
     @staticmethod
     def name() -> str:
