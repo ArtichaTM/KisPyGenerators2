@@ -75,8 +75,6 @@ class TaskRange(metaclass=TaskMeta):
             awaited: List[Union[int, None]] = [None, None]
             send.extend((None for _ in range(start, end+1)))
             awaited.extend((range(start, end+1)))
-            print(send)
-            print(awaited)
             yield ValuesTuple(send, awaited)
 
     @staticmethod
