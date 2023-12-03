@@ -23,10 +23,10 @@ TODO
   * **[tasks.py](src/tasks.py)** - Задачи. Независимые классы, которые собираются в Exercise
   * **[exercise.py](src/exercise.py)** - содержит класс Exercise, который является контейнером для задач, описанных в tasks.py
 * **[tests](/tests)** - разные тесты для исходного кода
-  * **[exercise](tests/exercise)** - Tests corresponding to Exercise class
-    * **[test_exercise.py](tests/exercise/test_exercise.py)** - Tasks to Exercise class methods
-    * **[test_exercise_samples.py](tests/exercise/test_exercise_samples.py)** - Tests to some Exercise examples
-  * **[tasks](tests/tasks)** - Individual task tests
+  * **[exercise](tests/exercise)** - Тесты относящиеся к классу Exercise
+    * **[test_exercise.py](tests/exercise/test_exercise.py)** - Тесты методов Exercise
+    * **[test_exercise_samples.py](tests/exercise/test_exercise_samples.py)** - Тесты синергии разных задач
+  * **[tasks](tests/tasks)** - Индвидуальные тесты каждой задачи
 ### Классы
 #### Exercise
 Класс, через который рекомендуется производить всё взаимодействие с библиотекой
