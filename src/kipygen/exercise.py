@@ -1,5 +1,5 @@
 from io import StringIO
-from typing import Dict, Generator, List, Callable, Sequence, Tuple, TypeVar
+from typing import Dict, Generator, List, Callable, Tuple, TypeVar
 from random import shuffle
 from itertools import combinations
 from math import factorial
@@ -50,13 +50,14 @@ class Exercise:
                     break
                 elif type(gen_out) is not type(awaited):
                     output.write(
-                        f'От генератора ожидался тип данных {type(awaited).__qualname__} ({awaited}), '
+                        f'От генератора ожидался тип данных '
+                        f'{type(awaited).__qualname__} ({awaited}), '
                         f'однако получен {type(gen_out).__qualname__} ({gen_out})'
                     )
                     break
                 iteration += 1
         except StopIteration:
-            output.write(f'Генератор неожиданно завершился')
+            output.write('Генератор неожиданно завершился')
         except Exception as e:
             output.write(
                 f"Неожиданное исключение: "
@@ -170,8 +171,15 @@ class Exercise:
         """ Returns send and awaited values in cute string form, aligned to left
         :param _send: ValuesTuple.send
         :param _awaited: ValuesTuple.awaited
-        :param indexes: Dictionary, where
-        :return: 
+        :param indexes: Dictionary, where indexes and lengths of values is placed
+        :return: Send and awaited values
+
+        indexes variable will be like this on function end:
+        >>> {
+        ...     0: [4, 2],
+        ...     1: [9, 5],
+        ...     2: [17, 3]
+        ... }
         """
         assert isinstance(indexes, dict)
 

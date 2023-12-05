@@ -80,7 +80,7 @@ class TestTaskRange(TestCase):
             self.skipTest("Can't find task TaskPassword")
         if cl_calculator is None:
             self.skipTest("Can't find task TaskCalculator")
-        e = Exercise([cl_range, cl_password, cl_calculator,])
+        e = Exercise([cl_range, cl_password, cl_calculator])
 
         def gen():
             # Range
