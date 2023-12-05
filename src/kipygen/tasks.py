@@ -201,6 +201,20 @@ class TaskPassword(metaclass=TaskMeta):
             ),
         )
 
+        password_examples = [-1, 0, 1, '', '1', [], {}, dict()]
+
+        for password in password_examples:
+            send = [password]
+            awaited = [None]
+
+            fake_passwords = cls.generate_fakes(password)
+            send.extend(fake_passwords)
+            awaited.extend([False] * (len(send) - len(awaited)))
+
+            send.append(password)
+            awaited.append(True)
+            yield ValuesTuple(send, awaited)
+
     @staticmethod
     def name() -> str:
         return 'Пароль'
@@ -212,6 +226,16 @@ class TaskPassword(metaclass=TaskMeta):
             "пока генератору не будет передан тот же пароль. В этом случае "
             "вернуть True и закончить работу",
         )
+
+    @staticmethod
+    def generate_fakes(password) -> Generator:
+        if isinstance(password, (int, float)):
+            yield password-1
+            yield password+1
+            yield password+0.1
+            yield password-0.1
+            if password != 0:
+                yield -password
 
 
 class TaskCalculator(metaclass=TaskMeta):
