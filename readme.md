@@ -40,13 +40,16 @@ from typing import *
 class Exercise:
     def check_values(self):
         """
-        Возвращает генератор с ValuesTuple, который содержат последовательные значения из каждой задачи
+        Возвращает генератор с ValuesTuple, который содержат последовательные значения из каждой задачи.
+        Длины списков ValuesTuple.send и ValuesTuple.awaited гарантированно равны
         """
+
     def validate(self, factory: Callable[[], Generator], max_iterations: int = 50) -> str:
         """
         Проверяет фабрику генераторов на корректность в данном упражнение.
         В случае каких-либо ошибок возвращаемая строка содержит информацию об ошибке
         """
+
     @staticmethod
     def combinations_amount() -> int:
         """Возвращает число всевозможных комбинаций задач"""
