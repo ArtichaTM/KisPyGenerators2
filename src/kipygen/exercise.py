@@ -1,5 +1,5 @@
 from io import StringIO
-from typing import Generator, List, Callable, Tuple, TypeVar
+from typing import Dict, Generator, List, Callable, Sequence, Tuple, TypeVar
 from random import shuffle
 from itertools import combinations
 from math import factorial
@@ -35,29 +35,53 @@ class Exercise:
         :return: String with error message. If len(str) == 0, no error occured
         """
         iteration = 0
+        output = StringIO()
+        # indexes = dict()
+        send, awaited = None, None
         try:
             gen.send(None)
             for send, awaited in zip(check_values.send, check_values.awaited):
-                output = gen.send(send)
-                if type(output) is not type(awaited):
-                    return (f'Awaited type {type(awaited)}, '
-                            f'got {type(output)} on iteration {iteration}')
-                if output != awaited:
-                    return (f"Awaited {awaited}, "
-                            f"got {output} on iteration {iteration}")
+                gen_out = gen.send(send)
+                if gen_out != awaited:
+                    output.write(
+                        f"От генератора ожидалось значение {awaited}, "
+                        f"однако получено {gen_out}"
+                    )
+                    break
+                elif type(gen_out) is not type(awaited):
+                    output.write(
+                        f'От генератора ожидался тип данных {type(awaited).__qualname__} ({awaited}), '
+                        f'однако получен {type(gen_out).__qualname__} ({gen_out})'
+                    )
+                    break
                 iteration += 1
         except StopIteration:
-            return f'Generator unexpectedly closed on iteration {iteration}'
+            output.write(f'Генератор неожиданно завершился')
         except Exception as e:
-            return f"Unexpected exception: {type(e).__qualname__}({e.args[0]})"
+            output.write(
+                f"Неожиданное исключение: "
+                f"{type(e).__qualname__}({e.args[0]})"
+            )
 
-        # Generator should be closed by now
-        try:
-            gen.send(None)
-        except StopIteration:
-            return ''
-        else:
-            return 'Generator did not stopped after all tasks completed'
+        # Error happened
+        if output.tell() != 0:
+            indexes: dict = dict()
+            send, awaited = self._cute_in_out(check_values.send, check_values.awaited, indexes)
+            indexes: Tuple[int, int] = indexes[iteration]
+            output.write(f'\nSend:    {send}\nAwaited: {awaited}\n')
+            output.write(' ' * 9)
+            output.write(' ' * indexes[0])
+            output.write('^' * indexes[1])
+            return output.getvalue()
+
+        if output.tell() == 0:
+            # Generator should be closed by now
+            try:
+                gen.send(None)
+            except StopIteration:
+                pass
+            else:
+                return 'Генератор не остановился после выполнения всех задач'
 
     def check_values(self) -> Generator[ValuesTuple, None, None]:
         """
@@ -77,6 +101,7 @@ class Exercise:
     def validate(self, factory: Callable[[], Generator], max_iterations: int = 500) -> str:
         assert isinstance(max_iterations, int)
         assert max_iterations > 1
+        output = StringIO()
 
         for check_values in iterations_limit(self.check_values(), max_iterations):
             gen = factory()
@@ -137,9 +162,21 @@ class Exercise:
             f"{self.complexity} уровнем сложности")
 
     @staticmethod
-    def _cute_in_out(send: List[T], awaited: List[T]) -> Tuple[str, str]:
-        iter_send = iter(send)
-        iter_awaited = iter(awaited)
+    def _cute_in_out(
+            _send: List[T],
+            _awaited: List[T],
+            indexes: Dict[int, List[int]]
+    ) -> Tuple[str, str]:
+        """ Returns send and awaited values in cute string form, aligned to left
+        :param _send: ValuesTuple.send
+        :param _awaited: ValuesTuple.awaited
+        :param indexes: Dictionary, where
+        :return: 
+        """
+        assert isinstance(indexes, dict)
+
+        iter_send = iter(_send)
+        iter_awaited = iter(_awaited)
 
         send = StringIO()
         awaited = StringIO()
@@ -147,7 +184,8 @@ class Exercise:
         send.write('[ ')
         awaited.write('[ ')
 
-        for left, right in zip(iter_send, iter_awaited):
+        for index, left, right in zip(range(0, len(_send)), iter_send, iter_awaited):
+            indexes[index] = [send.tell()]
             if isinstance(left, str):
                 left = f"'{left}'"
             else:
@@ -161,6 +199,7 @@ class Exercise:
             awaited.write(right.ljust(length))
             send.write(', ')
             awaited.write(', ')
+            indexes[index].append(length)
 
         # Leftovers
         for left in iter_send:
@@ -198,7 +237,8 @@ class Exercise:
             io.write(f"\n{' '*len(prefix)}".join(task.short_description()))
         io.write('\nПример ввода и вывода (списки выровнены по элементам):')
         for example_checks in iterations_limit(self.check_values(), 2):
-            send, awaited = self._cute_in_out(example_checks.send, example_checks.awaited)
+            indexes = dict()
+            send, awaited = self._cute_in_out(example_checks.send, example_checks.awaited, indexes)
             io.write(f'\nВходящие в генератор данные:    '
                      f'{send}')
             io.write(f'\nВыходящие из генератора данные: '
