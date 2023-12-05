@@ -1,8 +1,10 @@
+from functools import partial
 from io import StringIO
-from typing import Dict, Generator, List, Callable, Tuple, TypeVar
+from typing import Dict, Generator, List, Callable, Tuple, TypeVar, Union
 from random import shuffle
 from itertools import combinations
 from math import factorial
+from threading import Thread
 
 from .meta import TaskMeta, ValuesTuple
 from .tasks import iterations_limit
