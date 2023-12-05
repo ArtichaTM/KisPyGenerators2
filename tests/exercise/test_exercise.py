@@ -1,7 +1,7 @@
 from unittest import TestCase
 from random import choices, randint, shuffle
 
-from kipygen import Exercise, TaskMeta
+from kipygen import Exercise, TaskMeta, iterations_limit
 
 
 class TestExercise(TestCase):
@@ -58,3 +58,17 @@ class TestExercise(TestCase):
                         exercise_description,
                         f"Awaited line:\n> {line}\nText:\n>{exercise_description}"
                     )
+
+    def test_all_tasks_send_awaited_length(self):
+        for exercise in Exercise.random():
+            if len(exercise.tasks) > 1:
+                continue
+            for check_values in iterations_limit(exercise.check_values(), 100):
+                self.assertEqual(
+                    len(check_values.send),
+                    len(check_values.awaited),
+                    f'Task {exercise.tasks[0].__qualname__} send and awaited lists length'
+                    ' are not equal:'
+                    f'\nSend:    {len(check_values)} - {check_values.send}'
+                    f'\nAwaited: {len(check_values)} - {check_values.awaited}'
+                )

@@ -116,5 +116,55 @@ class TestTaskRange(TestCase):
                 if output == int(output):
                     output = int(output)
                 values = yield output
+            yield None
+
+        self.assertEqual('', e.validate(gen))
+
+    def test_calculator_calculator(self):
+        cl_calculator = TaskMeta.find_task('TaskCalculator')
+        if cl_calculator is None:
+            self.skipTest("Can't find task TaskCalculator")
+        e = Exercise([cl_calculator, cl_calculator])
+
+        def gen():
+            # Calculator
+            output = yield 0
+            while True:
+                values = yield output
+                if values is None:
+                    break
+                operation, new_number = values
+                if operation == '+':
+                    output += new_number
+                elif operation == '-':
+                    output -= new_number
+                elif operation == '/':
+                    if new_number == 0:
+                        continue
+                    output /= new_number
+                elif operation == '*':
+                    output *= new_number
+                if output == int(output):
+                    output = int(output)
+            # Calculator
+            output = yield None
+            while True:
+                values = yield output
+                if values is None:
+                    break
+                operation, new_number = values
+                if operation == '+':
+                    output += new_number
+                elif operation == '-':
+                    output -= new_number
+                elif operation == '/':
+                    if new_number == 0:
+                        continue
+                    output /= new_number
+                elif operation == '*':
+                    output *= new_number
+                if output == int(output):
+                    output = int(output)
+            yield None
 
         self.assertEqual('', e.validate(gen))

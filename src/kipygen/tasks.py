@@ -239,37 +239,38 @@ class TaskCalculator(metaclass=TaskMeta):
                 output *= new_number
             if output == int(output):
                 output = int(output)
+        yield None
 
     @classmethod
     def check_values(cls) -> Generator[ValuesTuple, None, None]:
         yield from (
             ValuesTuple(
                 [0, ('+', 5), None],
-                [0, 5]
+                [0, 5, None]
             ),
             ValuesTuple(
                 [70, ('*', 2), None],
-                [70, 140]
+                [70, 140, None]
             ),
             ValuesTuple(
                 [70, ('*', 2), ('-', 2), None],
-                [70, 140, 138]
+                [70, 140, 138, None]
             ),
             ValuesTuple(
                 [3, ('/', 2), ('*', 2), None],
-                [3, 1.5, 3]
+                [3, 1.5, 3, None]
             ),
             ValuesTuple(
                 [3, ('/', 2), ('*', 2), None],
-                [3, 1.5, 3]
+                [3, 1.5, 3, None]
             ),
             ValuesTuple(
                 [70, ('/', 0), ('+', 1), None],
-                [70, 70, 71]
+                [70, 70, 71, None]
             ),
             ValuesTuple(
                 [70, None],
-                [70, ]
+                [70, None]
             ),
         )
         while True:
@@ -299,6 +300,7 @@ class TaskCalculator(metaclass=TaskMeta):
                 awaited.append(number)
 
             send.append(None)
+            awaited.append(None)
             yield ValuesTuple(send, awaited)
 
     @staticmethod
