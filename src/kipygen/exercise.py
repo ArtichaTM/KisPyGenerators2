@@ -136,6 +136,48 @@ class Exercise:
             f"{len(self.tasks)} заданиями и "
             f"{self.complexity} уровнем сложности")
 
+    @staticmethod
+    def _cute_in_out(send: List[T], awaited: List[T]) -> Tuple[str, str]:
+        iter_send = iter(send)
+        iter_awaited = iter(awaited)
+
+        send = StringIO()
+        awaited = StringIO()
+
+        send.write('[ ')
+        awaited.write('[ ')
+
+        for left, right in zip(iter_send, iter_awaited):
+            if isinstance(left, str):
+                left = f"'{left}'"
+            else:
+                left = str(left)
+            if isinstance(right, str):
+                right = f"'{right}'"
+            else:
+                right = str(right)
+            length = max(len(left), len(right))
+            send.write(left.ljust(length))
+            awaited.write(right.ljust(length))
+            send.write(', ')
+            awaited.write(', ')
+
+        # Leftovers
+        for left in iter_send:
+            send.write(str(left))
+
+        for right in iter_awaited:
+            awaited.write(str(right))
+
+        # Removing last ", "
+        send.seek(send.truncate(send.tell()-2))
+        awaited.seek(awaited.truncate(awaited.tell()-2))
+
+        send.write(' ]')
+        awaited.write(' ]')
+
+        return send.getvalue(), awaited.getvalue()
+
     def description(self) -> str:
         assert len(TaskMeta.all_tasks) < 100
         io = StringIO()
@@ -152,10 +194,11 @@ class Exercise:
             prefix = f"{index}. ".rjust(tabulation_amount+1)
             io.write(prefix)
             io.write(f"\n{' '*len(prefix)}".join(task.short_description()))
-        io.write('\nПример ввода и вывода:')
+        io.write('\nПример ввода и вывода (списки выровнены по элементам):')
         for example_checks in iterations_limit(self.check_values(), 2):
+            send, awaited = self._cute_in_out(example_checks.send, example_checks.awaited)
             io.write(f'\nВходящие в генератор данные:    '
-                     f'{example_checks.send}')
+                     f'{send}')
             io.write(f'\nВыходящие из генератора данные: '
-                     f'{example_checks.awaited}')
+                     f'{awaited}')
         return io.getvalue()
