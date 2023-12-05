@@ -9,6 +9,39 @@ from .tasks import iterations_limit
 
 
 T = TypeVar('T')
+T1 = TypeVar('T1')
+T2 = TypeVar('T2')
+
+
+def _timeout_call(
+        function: Callable[[T1], T2],
+        values: list,
+        *args: T1,
+        **kwargs: T1
+) -> None:
+    values.append(function(*args, **kwargs))
+
+
+def timeout_call(
+        _function: Callable[[T1], T2],
+        *args: T1,
+        timeout: Union[float, int] = 3,
+        **kwargs: T1
+) -> T2:
+    output = []
+    function = partial(_timeout_call, _function, output)
+
+    thread = Thread(
+        target=function,
+        args=args,
+        kwargs=kwargs, name='Function check thread',
+        daemon=True
+    )
+    thread.start()
+    thread.join(timeout)
+    if thread.is_alive():
+        raise TimeoutError()
+    return output[0]
 
 
 class Exercise:
@@ -34,14 +67,15 @@ class Exercise:
         :param gen: Collective generator of all tasks contained in `tasks` variable
         :return: String with error message. If len(str) == 0, no error occured
         """
+        TIMEOUT = 3
         iteration = 0
         output = StringIO()
         # indexes = dict()
         send, awaited = None, None
         try:
-            gen.send(None)
+            timeout_call(gen.send, None, timeout=TIMEOUT)
             for send, awaited in zip(check_values.send, check_values.awaited):
-                gen_out = gen.send(send)
+                gen_out = timeout_call(gen.send, send, timeout=TIMEOUT)
                 if gen_out != awaited:
                     output.write(
                         f"От генератора ожидалось значение {awaited}, "
@@ -58,6 +92,8 @@ class Exercise:
                 iteration += 1
         except StopIteration:
             output.write('Генератор неожиданно завершился')
+        except TimeoutError:
+            output.write(f'Генератор не дал ответ после {TIMEOUT} секунд')
         except Exception as e:
             output.write(
                 f"Неожиданное исключение: "
