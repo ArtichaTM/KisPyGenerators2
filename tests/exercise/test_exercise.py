@@ -46,7 +46,7 @@ class TestExercise(TestCase):
         self.random_range(1, 5)
         self.random_range(5, 10)
 
-    def test_description(self):
+    def test_description_all_tasks(self):
         values = [*Exercise.random_range(8, 15)]
         shuffle(values)
         for exercise in values:
