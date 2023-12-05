@@ -241,7 +241,7 @@ class TaskPassword(metaclass=TaskMeta):
 class TaskCalculator(metaclass=TaskMeta):
     complexity = 5
     _number = Union[float, int]
-    _gen_annotation = Generator[_number, Tuple[str, _number], None]
+    _gen_annotation = Generator[_number, Optional[Tuple[str, _number]], None]
 
     @staticmethod
     def generator() -> _gen_annotation:
