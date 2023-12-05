@@ -11,6 +11,11 @@ class TestExercise(TestCase):
         if len(TaskMeta.all_tasks) < 2:
             self.skipTest('Not enough tasks to check Exercise')
 
+    def test_all_solo_tasks(self):
+        for task in TaskMeta.all_tasks:
+            e = Exercise([task])
+            self.assertEqual('', e.validate(task.generator))
+
     def test_complexity_calculator(self):
         assert len(TaskMeta.all_tasks) >= 2
         for _ in range(8):
