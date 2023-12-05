@@ -340,3 +340,32 @@ class TaskCalculator(metaclass=TaskMeta):
             "> число: любое число типа float или int",
             "> операция: символ +, -, *, / для выполнения соответствующих операций"
         )
+
+
+# class TaskTEMPLATE(metaclass=TaskMeta):
+#     complexity = 5
+#     _gen_annotation = Generator['AWAITED_VALUE', 'SEND_VALUE', None]
+#
+#     @staticmethod
+#     def generator() -> _gen_annotation:
+#         yield None
+#
+#     @classmethod
+#     def check_values(cls) -> Generator[ValuesTuple, None, None]:
+#         yield from (
+#             ValuesTuple(
+#                 [None],
+#                 [None]
+#             ),
+#         )
+#
+#     @staticmethod
+#     def name() -> str:
+#         return ''
+#
+#     @staticmethod
+#     def short_description() -> tuple:
+#         return (
+#             "",
+#         )
+
