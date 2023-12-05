@@ -239,7 +239,7 @@ class TaskPassword(metaclass=TaskMeta):
 
 
 class TaskCalculator(metaclass=TaskMeta):
-    complexity = 5
+    complexity = 7
     _number = Union[float, int]
     _gen_annotation = Generator[_number, Optional[Tuple[str, _number]], None]
 
@@ -408,4 +408,3 @@ class TaskBinarySum(metaclass=TaskMeta):
 #         return (
 #             "",
 #         )
-
