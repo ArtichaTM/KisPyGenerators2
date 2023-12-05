@@ -1,5 +1,5 @@
 from itertools import chain
-from typing import Generator, Any, List, Tuple, TypeVar, Union
+from typing import Generator, Any, List, Optional, Tuple, TypeVar, Union
 from io import StringIO
 from random import choices, choice, randint, triangular
 
@@ -339,6 +339,46 @@ class TaskCalculator(metaclass=TaskMeta):
             "Дальше в генератор будут передаваться пары (операция, число), где:",
             "> число: любое число типа float или int",
             "> операция: символ +, -, *, / для выполнения соответствующих операций"
+        )
+
+
+class TaskBinarySum(metaclass=TaskMeta):
+    complexity = 5
+    _gen_annotation = Generator[str, int, None]
+
+    @staticmethod
+    def generator() -> _gen_annotation:
+        new_value = number = 0
+        while new_value is not None:
+            number += new_value
+            new_value = yield bin(number)[2:]
+        yield bin(number)[2:]
+
+    @classmethod
+    def check_values(cls) -> Generator[ValuesTuple, None, None]:
+        yield from (
+            ValuesTuple(
+                [212, None],
+                ['11010100', '11010100']
+            ),
+            ValuesTuple(
+                [None],
+                ['0']
+            ),
+            ValuesTuple(
+                [40, 12, None],
+                ['101000', '110100', '110100']
+            ),
+        )
+
+    @staticmethod
+    def name() -> str:
+        return ''
+
+    @staticmethod
+    def short_description() -> tuple:
+        return (
+            "",
         )
 
 
