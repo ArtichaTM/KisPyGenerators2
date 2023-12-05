@@ -165,9 +165,11 @@ class Exercise:
         # Leftovers
         for left in iter_send:
             send.write(str(left))
+            send.write(', ')
 
         for right in iter_awaited:
             awaited.write(str(right))
+            send.write(', ')
 
         # Removing last ", "
         send.seek(send.truncate(send.tell()-2))
