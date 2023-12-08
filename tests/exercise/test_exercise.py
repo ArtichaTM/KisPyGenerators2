@@ -36,15 +36,15 @@ class TestExercise(TestCase):
             'Wrong algorithm for random combinations calculate'
         )
 
-    def random_range(self, min: int, max: int):
-        for exercise in Exercise.random_range(min, max):
+    def random_range(self, _min: int, _max: int):
+        for exercise in Exercise.random_range(_min, _max):
             text = ', '.join((i.__qualname__ for i in exercise.tasks))
             text = (
                 f"Exercise {exercise} with {text} complexity not in range "
-                f"{min} <= {exercise.complexity} <= {max}"
+                f"{_min} <= {exercise.complexity} <= {_max}"
             )
-            self.assertGreaterEqual(exercise.complexity, min, text)
-            self.assertLessEqual(exercise.complexity, max, text)
+            self.assertGreaterEqual(exercise.complexity, _min, text)
+            self.assertLessEqual(exercise.complexity, _max, text)
 
     def test_random_range(self):
         assert len(TaskMeta.all_tasks) >= 2
