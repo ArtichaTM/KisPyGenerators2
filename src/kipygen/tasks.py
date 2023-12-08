@@ -8,10 +8,6 @@ from .meta import TaskMeta, ValuesTuple
 
 
 __all__ = (
-    'TaskPassword',
-    'TaskRange',
-    'TaskConcat',
-    'TaskCalculator',
     'iterations_limit',
 )
 
