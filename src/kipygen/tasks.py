@@ -1,7 +1,8 @@
 from itertools import chain
-from typing import Generator, Any, List, Optional, Tuple, TypeVar, Union
+from typing import Generator, Any, Iterable, List, Optional, Tuple, TypeVar, Union
 from io import StringIO
 from random import choices, choice, randint, triangular
+from queue import Queue
 
 from .meta import TaskMeta, ValuesTuple
 
@@ -383,6 +384,80 @@ class TaskBinarySum(metaclass=TaskMeta):
             "в двоичной системе счисления. В следующих итерациях в генератор "
             "передаются целые числа, которые нужно сложить с предыдущими, возвращая "
             "числа в двоичной форме типа строка",
+        )
+
+
+class TaskChainQueue(metaclass=TaskMeta):
+    complexity = 15
+    _gen_annotation = Generator[Optional[T], Optional[Iterable[T]], None]
+
+    @staticmethod
+    def generator() -> _gen_annotation:
+        iterables = Queue()
+        new_iterable = yield
+        iterables.put(new_iterable)
+
+        while not iterables.empty():
+            current_iterable = iterables.get()
+
+            for value in current_iterable:
+                new_iterable = yield value
+                if new_iterable is not None:
+                    iterables.put(new_iterable)
+
+    @classmethod
+    def check_values(cls) -> Generator[ValuesTuple, None, None]:
+        def gen():
+            yield 1
+            yield ''
+            yield 12
+        yield from (
+            ValuesTuple(
+                [[123, 'Values', '1'], None, (2, 2.3, False), None, None, None],
+                [123, 'Values', '1', 2, 2.3, False]
+            ),
+            ValuesTuple(
+                [[12], [1]],
+                [12, 1]
+            ),
+            ValuesTuple(
+                [(5,), [23], '123', None, None],
+                [5, 23, '1', '2', '3']
+            ),
+            ValuesTuple(
+                [gen(), None, None],
+                [1, '', 12]
+            ),
+        )
+        while True:
+            send = [[object() for _ in range(randint(1, 4))]]
+            awaited = [*send[0]]
+            elements_left = len(send[0])
+            for _ in range(randint(1, 4)):
+                none_amount = randint(0, elements_left - 1)
+                elements_left -= none_amount
+                send.extend((None for _ in range(none_amount)))
+                new_list = [object() for _ in range(randint(1, 4))]
+                send.append(new_list)
+                awaited.extend(new_list)
+                elements_left += len(new_list) - 1
+            send.extend((None for _ in range(elements_left-1)))
+            yield ValuesTuple(send, awaited)
+
+    @staticmethod
+    def name() -> str:
+        return 'Очередь итераторов'
+
+    @staticmethod
+    def short_description() -> tuple:
+        return (
+            "На вход поступают списки. Задача состоит в "
+            "возвращение элементов, состоящие в переданных списках.",
+            "Списки могут поступить в любой момент итерации генератора",
+            "Концом работы генератора считается достижение последнего "
+            "элемента из всех списков БЕЗ получения следующего списка. Например:",
+            "при входе [['a', 'a'], None] выход должен быть ['a', 'a'], однако ",
+            "при входе [['a', 'a'], None, ['a']] выход должен быть ['a', 'a', 'a']"
         )
 
 
