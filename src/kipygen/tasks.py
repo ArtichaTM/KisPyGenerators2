@@ -389,7 +389,7 @@ class TaskBinarySum(metaclass=TaskMeta):
 
 class TaskChainQueue(metaclass=TaskMeta):
     complexity = 15
-    _gen_annotation = Generator[Optional[T], Optional[Iterable[T]], None]
+    _gen_annotation = Generator[T, Optional[Iterable[T]], None]
 
     @staticmethod
     def generator() -> _gen_annotation:
