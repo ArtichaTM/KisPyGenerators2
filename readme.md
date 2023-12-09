@@ -152,6 +152,7 @@ class Checker:
 #### Checker
 ```python
 from typing import *
+from queue import Queue
 
 class CheckHook:
   """
@@ -160,17 +161,15 @@ class CheckHook:
   __slots__ = ()
 
   def __call__(
-    self,
-    function: callable,
-    gen: Generator,
-    send_value: Any,
-    timeout: Union[int, float]
+      self,
+      q_in: Queue,
+      q_out: Queue,
+      gen: Generator
   ) -> Any:
     """ Вызывается при требовании от генератора нового значения
-    :param function: брокер между вызовами генераторами и основным проверяющим алгоритмом
-    :param gen: генератор, который проверяется
-    :param send_value: значение, идущее в генератор (текущий класс, send_value == self)
-    :param timeout: тайм-аут ожидания от генератора значения
+    :param q_in: Очередь, в которую передаются значения для генератора.
+    :param q_out: Очередь, в которую передаются значения полученные из генератора.
+    :param gen: Проверяемый генератор
     :return: Значение, полученное от генератора
     """
 

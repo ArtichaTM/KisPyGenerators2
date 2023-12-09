@@ -11,7 +11,6 @@ class CheckHook:
     """
     Checker class, but in comparison with Checker, this class invoked with generator
     and corresponding arguments. This class can be placed ONLY in send list
-
     Example:
     >>>class Forward(CheckHook):
     ...    __slots__ = ('value', )
@@ -21,12 +20,12 @@ class CheckHook:
     ...
     ...    def __call__(
     ...        self,
-    ...        function: callable,
-    ...        gen: Generator,
-    ...        send_value: Any,
-    ...        timeout: Union[int, float]
+    ...        q_in: Queue,
+    ...        q_out: Queue,
+    ...        gen: Generator
     ...    ) -> Any:
-    ...        return function(gen.send, self.value, timeout)
+    ...        q_in.put((gen, self.value))
+    ...        return q_out.get()
     This class simply do nothing. Example of ValueTuple.send with and without:
     without: [1, 2, 3]
     with: [1, Forward(2), 3]
@@ -40,10 +39,9 @@ class CheckHook:
         gen: Generator
     ) -> Any:
         """ Called when needed next value from generator
-        :param function: Intermediate function to call generator methods
+        :param q_in: Queue of value passing to generator
+        :param q_out: Queue of value coming from generator
         :param gen: Running generator to validate
-        :param send_value: Value, passing to generator (send_value == self)
-        :param timeout: how many second wait answer from generator thread
         :return: value from generator
         """
         raise NotImplementedError()
