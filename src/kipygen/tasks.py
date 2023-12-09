@@ -5,7 +5,7 @@ from random import choices, choice, randint, triangular
 from queue import Queue
 
 from .meta import TaskMeta, ValuesTuple
-from .checkers import AnyValue
+from .checkers import AnyValue, AnyValueExceptType
 from .checkhooks import GenThrow
 
 
@@ -513,6 +513,83 @@ class TaskFibonacci(metaclass=TaskMeta):
             "Вывести последовательность Фибоначчи до вызова исключения StopIteration",
             "Вернуть None",
         )
+
+
+class TaskNotationCounter(metaclass=TaskMeta):
+    complexity = 9
+    _gen_annotation = Generator[str, int, None]
+
+    @staticmethod
+    def generator() -> _gen_annotation:
+        notation = yield None
+        counter: int = 0
+        value: str = ''
+        try:
+            while True:
+                if notation == 2:
+                    value = bin(counter)[2:]
+                elif notation == 8:
+                    value = oct(counter)[2:]
+                elif notation == 10:
+                    value = str(counter)
+                elif notation == 16:
+                    value = hex(counter)[2:]
+                new_notation = yield value
+                if isinstance(new_notation, int):
+                    notation = new_notation
+                counter += 1
+        except StopIteration:
+            yield None
+
+    @classmethod
+    def check_values(cls) -> Generator[ValuesTuple, None, None]:
+        avet = AnyValueExceptType
+        yield from (
+            ValuesTuple(
+                [10, avet(int), avet(int), GenThrow(StopIteration)],
+                ['0', '1', '2', None]
+            ),
+            ValuesTuple(
+                [2, *([avet(int)]*2), 8, *([avet(int)]*5), GenThrow(StopIteration)],
+                ['0', '1', '10', '3', '4', '5', '6', '7', '10', None]
+            ),
+        )
+        funcs = {
+            2: lambda x: bin(x)[2:],
+            8: lambda x: oct(x)[2:],
+            10: lambda x: str(x),
+            16: lambda x: hex(x)[2:]
+        }
+        while True:
+            send = []
+            awaited = []
+            counter = 0
+            for _ in range(randint(1, 5)):
+                notation = choice((2, 8, 10, 16))
+                send.append(notation)
+                awaited.append(funcs[notation](counter))
+                for number in range(randint(1, 40)):
+                    counter += 1
+                    send.append(AnyValueExceptType(int))
+                    awaited.append(funcs[notation](counter))
+                counter += 1
+            send.append(GenThrow(StopIteration))
+            awaited.append(None)
+            yield ValuesTuple(send, awaited)
+
+    @staticmethod
+    def name() -> str:
+        return 'Счётчик 2/8/10/16 СС'
+
+    @staticmethod
+    def short_description() -> tuple:
+        return (
+            "Генератору передаётся система счисления (число 2/8/10/16), вернуть None",
+            "Возвращать числа от 0 до ∞ в указанной системе счисления, меняя её при "
+            "получении целого числа (менять при числах 2, 8, 10, 16, остальные игнорировать)",
+            "В случае вызова исключения StopIteration вернуть None и закончить задачу"
+        )
+
 
 
 # class TaskTEMPLATE(metaclass=TaskMeta):

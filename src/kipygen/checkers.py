@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Type
 from random import choice
 
 __all__ = (
@@ -54,7 +54,7 @@ class AnyValue(Checker):
 
 
 class AnyValueExcept(Checker):
-    __slots__ = ()
+    __slots__ = ('value',)
 
     def __init__(self, value: Any):
         self.value = value
@@ -75,3 +75,31 @@ class AnyValueExcept(Checker):
 
     def description(self) -> str:
         return f"любое значение любого типа данных кроме одного (здесь: {self.value})"
+
+
+class AnyValueExceptType(Checker):
+    __slots__ = ('dtype', )
+
+    def __init__(self, dtype: Type[Any]):
+        self.dtype = dtype
+
+    def send_value(self) -> Any:
+        while True:
+            value = choice(("123", '1', None, True, False, 12, 2.2, object()))
+            if not isinstance(value, self.dtype):
+                break
+        return value
+
+    def output_value(self, generator_output: Any) -> str:
+        if isinstance(generator_output, self.dtype):
+            return f'Ожидался любой тип данных кроме {self.dtype}, однако этот тип и получен'
+        return ''
+
+    def name(self) -> str:
+        return f"Any type except {self.dtype.__qualname__}"
+
+    def description(self) -> str:
+        return (f"любое значение любого типа данных кроме одного типа данных "
+                f"(здесь: {self.dtype.__qualname__})")
+
+
