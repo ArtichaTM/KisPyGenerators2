@@ -488,6 +488,19 @@ class TaskFibonacci(metaclass=TaskMeta):
                 [0, 1, 1, 2, 3, 5, 8, 13, None]
             ),
         )
+        while True:
+            send = [None]  # 1, None
+            awaited = []  # 1, 0
+            gen = cls.generator()
+            next(gen)
+            for value in iterations_limit(gen, randint(0, 200)):
+                send.append(AnyValue())
+                awaited.append(value)
+            # 1+n, n
+            send.append(GenThrow(StopIteration))  # 1+n, n
+            awaited.append(next(gen))  # 1+n+1, n+1
+            awaited.append(None)  # 1+n+1, n+1+1
+            yield ValuesTuple(send, awaited)
 
     @staticmethod
     def name() -> str:
