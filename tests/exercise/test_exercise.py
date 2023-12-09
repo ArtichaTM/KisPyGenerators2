@@ -14,8 +14,6 @@ class TestExercise(TestCase):
     def test_all_solo_tasks(self):
         for task in TaskMeta.all_tasks:
             e = Exercise([task])
-            if task.__qualname__ == 'TaskFibonacci':
-                print(e.description())
             self.assertEqual('', e.validate(task.generator))
 
     def test_complexity_calculator(self):
