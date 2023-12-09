@@ -6,6 +6,7 @@ from queue import Queue
 
 from .meta import TaskMeta, ValuesTuple
 from .checkers import AnyValue
+from .checkhooks import GenThrow
 
 
 __all__ = (
@@ -455,6 +456,49 @@ class TaskChainQueue(metaclass=TaskMeta):
             "элемента из всех списков БЕЗ получения следующего списка. Например:",
             "при входе [['a', 'a'], None] выход должен быть ['a', 'a'], однако ",
             "при входе [['a', 'a'], None, ['a']] выход должен быть ['a', 'a', 'a']"
+        )
+
+
+class TaskFibonacci(metaclass=TaskMeta):
+    complexity = 2
+    _gen_annotation = Generator[int, None, None]
+
+    @staticmethod
+    def generator() -> _gen_annotation:
+        yield None
+        try:
+            first = 0
+            yield first
+            second = 1
+            yield second
+            while True:
+                first, second = second, first+second
+                yield second
+        except StopIteration:
+            yield None
+
+    @classmethod
+    def check_values(cls) -> Generator[ValuesTuple, None, None]:
+        yield from (
+            ValuesTuple(
+                [
+                    None, AnyValue(), AnyValue(), AnyValue(), AnyValue(),
+                    AnyValue(), AnyValue(), AnyValue(), GenThrow(StopIteration)
+                ],
+                [0, 1, 1, 2, 3, 5, 8, 13, None]
+            ),
+        )
+
+    @staticmethod
+    def name() -> str:
+        return 'Последовательность Фибоначчи'
+
+    @staticmethod
+    def short_description() -> tuple:
+        return (
+            "Вернуть None.",
+            "Вывести последовательность Фибоначчи до вызова исключения StopIteration",
+            "Вернуть None",
         )
 
 

@@ -1,7 +1,8 @@
-from typing import Any, Union
+from typing import Any, Union, Type, Generator
 
 __all__ = (
     'CheckHook',
+    'GenThrow',
 )
 
 
@@ -20,11 +21,11 @@ class CheckHook:
     ...    def __call__(
     ...        self,
     ...        function: callable,
-    ...        target_method: callable,
+    ...        gen: Generator,
     ...        send_value: Any,
     ...        timeout: Union[int, float]
     ...    ) -> Any:
-    ...        return function(target_method, self.value, timeout)
+    ...        return function(gen.send, self.value, timeout)
     This class simply do nothing. Example of ValueTuple.send with and without:
     without: [1, 2, 3]
     with: [1, Forward(2), 3]
@@ -34,8 +35,40 @@ class CheckHook:
     def __call__(
         self,
         function: callable,
-        target_method: callable,
+        gen: Generator,
         send_value: Any,
         timeout: Union[int, float]
     ) -> Any:
-        return function(target_method, send_value, timeout)
+        return function(gen.send, send_value, timeout)
+
+    def name(self) -> str:
+        raise NotImplementedError()
+
+    def description(self) -> str:
+        raise NotImplementedError()
+
+
+class GenThrow(CheckHook):
+    __slots__ = ('exception',)
+
+    def __init__(self, exception: Type[BaseException]):
+        isinstance(exception, BaseException)
+        self.exception = exception
+
+    def __call__(
+        self,
+        function: callable,
+        gen: Generator,
+        send_value: Any,
+        timeout: Union[int, float]
+    ) -> Any:
+        return function(gen.throw, self.exception, timeout)
+
+    def name(self) -> str:
+        return f"Отправка исключения {self.exception.__qualname__}"
+
+    def description(self) -> str:
+        return (
+            f"В генератор отправляется исключение с помощью метода Generator.throw()"
+            f" (здесь: исключение {self.exception.__qualname__})"
+        )

@@ -74,13 +74,11 @@ class Exercise:
         TIMEOUT = 3
         iteration = 0
         output = StringIO()
-        # indexes = dict()
-        send, awaited = None, None
         try:
             timeout_call(gen.send, None, timeout=TIMEOUT)
             for send, awaited in zip(check_values.send, check_values.awaited):
                 if isinstance(send, CheckHook):
-                    gen_out = send(timeout_call, gen.send, send, timeout=TIMEOUT)
+                    gen_out = send(timeout_call, gen, send, timeout=TIMEOUT)
                 else:
                     gen_out = timeout_call(gen.send, send, timeout=TIMEOUT)
                 if isinstance(awaited, Checker):
@@ -115,7 +113,7 @@ class Exercise:
         # Error happened
         if output.tell() != 0:
             indexes: dict = dict()
-            send, awaited = self._cute_in_out(check_values.send, check_values.awaited, indexes)
+            send, awaited = self._cute_in_out(check_values.send, check_values.awaited, indexes, {})
             indexes: Tuple[int, int] = indexes[iteration]
             output.write(f'\nSend:    {send}\nAwaited: {awaited}\n')
             output.write(' ' * 9)
@@ -245,7 +243,7 @@ class Exercise:
             indexes[index] = [send.tell()]
             if isinstance(left, str):
                 left = f"'{left}'"
-            elif isinstance(left, Checker):
+            elif isinstance(left, (Checker, CheckHook)):
                 checkers[type(left).__qualname__] = left
                 left = left.name()
             else:
