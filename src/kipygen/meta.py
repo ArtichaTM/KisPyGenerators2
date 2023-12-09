@@ -1,8 +1,9 @@
-from typing import Any, Generator, List, NamedTuple, Callable, Union
+from typing import Any, Generator, List, NamedTuple, Callable, Union, Tuple
 
 __all__ = (
     'TaskMeta',
     'ValuesTuple',
+    'Checker',
 )
 
 
@@ -72,3 +73,30 @@ class TaskMeta(type):
         for task in cls.all_tasks:
             if task.__qualname__ == name:
                 return task
+
+
+class Checker:
+    """ Checker class, to verify generator correctness """
+    def send_value(self) -> Any:
+        """ Called when Checker place in send values list"""
+        raise NotImplementedError()
+
+    def output_value(self, generator_output: Any) -> str:
+        """ Called when during validating Checker in awaited list
+        :param generator_output: Output of generator
+        :return: String, containing error. Empty string, if everything correct
+        """
+        raise NotImplementedError()
+
+    @staticmethod
+    def name() -> str:
+        """ Called when filling send/awaited values in example for user """
+        raise NotImplementedError()
+
+    @staticmethod
+    def description() -> str:
+        """
+        Called after all send/awaited values printed
+        to specify checker functionality
+        """
+        raise NotImplementedError()

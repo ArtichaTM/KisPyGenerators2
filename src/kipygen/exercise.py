@@ -1,12 +1,12 @@
 from functools import partial
 from io import StringIO
-from typing import Dict, Generator, List, Callable, Tuple, TypeVar, Union
+from typing import Dict, Generator, List, Callable, Set, Tuple, TypeVar, Union
 from random import shuffle
 from itertools import combinations
 from math import factorial
 from threading import Thread
 
-from .meta import TaskMeta, ValuesTuple
+from .meta import TaskMeta, ValuesTuple, Checker
 from .tasks import iterations_limit
 
 
@@ -78,7 +78,12 @@ class Exercise:
             timeout_call(gen.send, None, timeout=TIMEOUT)
             for send, awaited in zip(check_values.send, check_values.awaited):
                 gen_out = timeout_call(gen.send, send, timeout=TIMEOUT)
-                if gen_out != awaited:
+                if isinstance(awaited, Checker):
+                    gen_out = awaited.output_value(gen_out)
+                    if gen_out:
+                        output.write(gen_out)
+                        break
+                elif gen_out != awaited:
                     output.write(
                         f"От генератора ожидалось значение {awaited}, "
                         f"однако получено {gen_out}"
@@ -202,9 +207,10 @@ class Exercise:
 
     @staticmethod
     def _cute_in_out(
-            _send: List[T],
-            _awaited: List[T],
-            indexes: Dict[int, List[int]]
+        _send: List[T],
+        _awaited: List[T],
+        indexes: Dict[int, List[int]],
+        checkers: Dict[str, Checker]
     ) -> Tuple[str, str]:
         """ Returns send and awaited values in cute string form, aligned to left
         :param _send: ValuesTuple.send
@@ -234,10 +240,16 @@ class Exercise:
             indexes[index] = [send.tell()]
             if isinstance(left, str):
                 left = f"'{left}'"
+            elif isinstance(left, Checker):
+                checkers[type(left).__qualname__] = left
+                left = left.name()
             else:
                 left = str(left)
             if isinstance(right, str):
                 right = f"'{right}'"
+            elif isinstance(right, Checker):
+                checkers[type(right).__qualname__] = right
+                right = right.name()
             else:
                 right = str(right)
             length = max(len(left), len(right))
@@ -268,7 +280,7 @@ class Exercise:
     def description(self) -> str:
         assert len(TaskMeta.all_tasks) < 100
         io = StringIO()
-        io.write('Перед вами стоит задача построить генератор, который ')
+        io.write('> Перед вами стоит задача построить генератор, который ')
         io.write('выполняет несколько последовательных задач:')
         tabulation_amount = 2
 
@@ -281,12 +293,24 @@ class Exercise:
             prefix = f"{index}. ".rjust(tabulation_amount+1)
             io.write(prefix)
             io.write(f"\n{' '*len(prefix)}".join(task.short_description()))
-        io.write('\nПример ввода и вывода (списки выровнены по элементам):')
+        io.write('\n> Пример ввода и вывода (списки выровнены по элементам):')
+        checkers: Dict[str, Checker] = dict()
         for example_checks in iterations_limit(self.check_values(), 2):
             indexes = dict()
-            send, awaited = self._cute_in_out(example_checks.send, example_checks.awaited, indexes)
+            send, awaited = self._cute_in_out(
+                example_checks.send,
+                example_checks.awaited,
+                indexes,
+                checkers
+            )
             io.write(f'\nВходящие в генератор данные:    '
                      f'{send}')
             io.write(f'\nВыходящие из генератора данные: '
                      f'{awaited}')
+        checkers: list[str] = [f"{c.name()} - {c.description()}" for c in checkers.values()]
+        if checkers:
+            io.write('\n> Информация об уникальных значениях:')
+            for checker_info in checkers:
+                io.write('\n')
+                io.write(checker_info)
         return io.getvalue()

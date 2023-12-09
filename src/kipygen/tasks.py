@@ -5,6 +5,7 @@ from random import choices, choice, randint, triangular
 from queue import Queue
 
 from .meta import TaskMeta, ValuesTuple
+from .checkers import AnyValue
 
 
 __all__ = (
@@ -45,24 +46,24 @@ class TaskRange(metaclass=TaskMeta):
     def check_values(cls) -> Generator[ValuesTuple, None, None]:
         yield from (
             ValuesTuple(
-                [1, 3, None, None, None],
-                [None, None, 1, 2, 3]
+                [1, 3, AnyValue(), AnyValue(), AnyValue()],
+                [AnyValue(), AnyValue(), 1, 2, 3]
             ),
             ValuesTuple(
-                [1, 4, None, None, None, None],
-                [None, None, 1, 2, 3, 4]
+                [1, 4, AnyValue(), AnyValue(), AnyValue(), AnyValue()],
+                [AnyValue(), AnyValue(), 1, 2, 3, 4]
             ),
             ValuesTuple(
-                [123,  127, None, None, None, None, None],
-                [None, None, 123, 124, 125, 126, 127]
+                [123,  127, AnyValue(), AnyValue(), AnyValue(), AnyValue(), AnyValue()],
+                [AnyValue(), AnyValue(), 123, 124, 125, 126, 127]
             ),
             ValuesTuple(
-                [1, 1, None],
-                [None, None, 1]
+                [1, 1, AnyValue()],
+                [AnyValue(), AnyValue(), 1]
             ),
             ValuesTuple(
-                [0, 0, None],
-                [None, None, 0]
+                [0, 0, AnyValue()],
+                [AnyValue(), AnyValue(), 0]
             ),
         )
         while True:
