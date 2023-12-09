@@ -1,3 +1,4 @@
+from queue import Queue
 from typing import Any, Union, Type, Generator
 
 __all__ = (
@@ -34,10 +35,9 @@ class CheckHook:
 
     def __call__(
         self,
-        function: callable,
-        gen: Generator,
-        send_value: Any,
-        timeout: Union[int, float]
+        q_in: Queue,
+        q_out: Queue,
+        gen: Generator
     ) -> Any:
         """ Called when needed next value from generator
         :param function: Intermediate function to call generator methods
@@ -46,7 +46,7 @@ class CheckHook:
         :param timeout: how many second wait answer from generator thread
         :return: value from generator
         """
-        return function(gen.send, send_value, timeout)
+        raise NotImplementedError()
 
     def name(self) -> str:
         raise NotImplementedError()
@@ -64,12 +64,12 @@ class GenThrow(CheckHook):
 
     def __call__(
         self,
-        function: callable,
-        gen: Generator,
-        send_value: Any,
-        timeout: Union[int, float]
+        q_in: Queue,
+        q_out: Queue,
+        gen: Generator
     ) -> Any:
-        return function(gen.throw, self.exception, timeout)
+        q_in.put((gen.throw, self.exception))
+        return q_out.get()
 
     def name(self) -> str:
         return f"Отправка исключения {self.exception.__qualname__}"

@@ -5,6 +5,7 @@ from random import shuffle
 from itertools import combinations
 from math import factorial
 from threading import Thread
+from queue import Queue
 
 from .meta import TaskMeta, ValuesTuple
 from .checkers import Checker
@@ -48,6 +49,16 @@ def timeout_call(
     return output[0]
 
 
+def checker_thread(q_in: Queue, q_out: Queue):
+    while True:
+        method, value = q_in.get()
+        if method is None:
+            break
+        value = method(value)
+        q_in.task_done()
+        q_out.put(value)
+
+
 class Exercise:
     __slots__ = ('tasks', 'complexity')
 
@@ -67,20 +78,29 @@ class Exercise:
     ) -> str:
         """
         Validates just started generator. Method calls "gen.send(None) on start
-
         :param gen: Collective generator of all tasks contained in `tasks` variable
-        :return: String with error message. If len(str) == 0, no error occured
+        :return: String with error message. If len(str) == 0, no error occurred
         """
-        TIMEOUT = 3
+        q_in = Queue()
+        q_out = Queue()
+        gen_thread = Thread(
+            target=checker_thread,
+            args=(q_in, q_out),
+            name='Generator checker'
+        )
+        gen_thread.start()
         iteration = 0
         output = StringIO()
         try:
-            timeout_call(gen.send, None, timeout=TIMEOUT)
+            q_in.put((gen.send, None))
+            q_out.get()
+            q_out.task_done()
             for send, awaited in zip(check_values.send, check_values.awaited):
                 if isinstance(send, CheckHook):
-                    gen_out = send(timeout_call, gen, send, timeout=TIMEOUT)
+                    gen_out = send(q_in, q_out, gen)
                 else:
-                    gen_out = timeout_call(gen.send, send, timeout=TIMEOUT)
+                    q_in.put((gen.send, send))
+                    gen_out = q_out.get()
                 if isinstance(awaited, Checker):
                     gen_out = awaited.output_value(gen_out)
                     if gen_out:
@@ -102,8 +122,8 @@ class Exercise:
                 iteration += 1
         except StopIteration:
             output.write('Генератор неожиданно завершился')
-        except TimeoutError:
-            output.write(f'Генератор не дал ответ после {TIMEOUT} секунд')
+        # except TimeoutError:
+        #     output.write(f'Генератор не дал ответ после {TIMEOUT} секунд')
         except Exception as e:
             output.write(
                 f"Неожиданное исключение: "
@@ -119,16 +139,21 @@ class Exercise:
             output.write(' ' * 9)
             output.write(' ' * indexes[0])
             output.write('^' * indexes[1])
-            return output.getvalue()
+            output.getvalue()
 
-        if output.tell() == 0:
+        elif output.tell() == 0:
             # Generator should be closed by now
             try:
                 gen.send(None)
             except StopIteration:
                 pass
             else:
-                return 'Генератор не остановился после выполнения всех задач'
+                output.write('Генератор не остановился после выполнения всех задач')
+
+        q_in.put((None, None))
+        gen_thread.join()
+
+        return output.getvalue()
 
     def check_values(self) -> Generator[ValuesTuple, None, None]:
         """
