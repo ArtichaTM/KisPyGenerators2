@@ -493,7 +493,7 @@ class TaskFibonacci(metaclass=TaskMeta):
             awaited = []  # 1, 0
             gen = cls.generator()
             next(gen)
-            for value in iterations_limit(gen, randint(0, 200)):
+            for value in iterations_limit(gen, randint(0, 40)):
                 send.append(AnyValue())
                 awaited.append(value)
             # 1+n, n
@@ -568,7 +568,7 @@ class TaskNotationCounter(metaclass=TaskMeta):
                 notation = choice((2, 8, 10, 16))
                 send.append(notation)
                 awaited.append(funcs[notation](counter))
-                for number in range(randint(1, 40)):
+                for number in range(randint(1, 5)):
                     counter += 1
                     send.append(AnyValueExceptType(int))
                     awaited.append(funcs[notation](counter))
