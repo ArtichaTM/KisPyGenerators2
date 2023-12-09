@@ -3,8 +3,6 @@ from typing import Any, Generator, List, NamedTuple, Callable, Union
 __all__ = (
     'TaskMeta',
     'ValuesTuple',
-    'Checker',
-    'CheckHook',
 )
 
 
@@ -75,62 +73,3 @@ class TaskMeta(type):
             if task.__qualname__ == name:
                 return task
 
-
-class Checker:
-    """
-    Checker class, to verify generator correctness
-    send_value or output_value can be undefined. In that case, this
-    checker should not be used in corresponding lists
-    """
-    def send_value(self) -> Any:
-        """ Called when Checker place in send values list"""
-        raise NotImplementedError()
-
-    def output_value(self, generator_output: Any) -> str:
-        """ Called when during validating Checker in awaited list
-        :param generator_output: Output of generator
-        :return: String, containing error. Empty string, if everything correct
-        """
-        raise NotImplementedError()
-
-    def name(self) -> str:
-        """ Called when filling send/awaited values in example for user """
-        raise NotImplementedError()
-
-    def description(self) -> str:
-        """
-        Called after all send/awaited values printed
-        to specify checker functionality
-        """
-        raise NotImplementedError()
-
-
-class CheckHook:
-    """
-    Checker class, but in comparison with Checker, this class invoked with generator
-    and corresponding arguments. This class can be placed ONLY in send list
-
-    Example:
-    >>>class Forward(CheckHook):
-    ...    __slots__ = ('value', )
-    ...
-    ...    def __init__(self, value: Any):
-    ...        self.value = value
-    ...
-    ...    def __call__(self, function: callable, *args, **kwargs) -> Any:
-    ...        arguments = list(args)
-    ...        # Finding self in arguments, because this hook are passing to func
-    ...        index = arguments.index(self)
-    ...        if index != -1:
-    ...            # Found? Replace with real value
-    ...            arguments[index] = self.value
-    ...        # Call function as nothing happened
-    ...        return function(*arguments, **kwargs)
-    This class simply do nothing. Example of ValueTuple.send with and without:
-    without: [1, 2, 3]
-    with: [1, Forward(2), 3]
-    """
-    __slots__ = ()
-
-    def __call__(self, function: callable, *args, **kwargs) -> Any:
-        return function(*args, **kwargs)

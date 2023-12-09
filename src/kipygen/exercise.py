@@ -6,7 +6,9 @@ from itertools import combinations
 from math import factorial
 from threading import Thread
 
-from .meta import TaskMeta, ValuesTuple, Checker, CheckHook
+from .meta import TaskMeta, ValuesTuple
+from .checkers import Checker
+from .checkhooks import CheckHook
 from .tasks import iterations_limit
 
 
