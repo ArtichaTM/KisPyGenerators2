@@ -92,8 +92,7 @@ class Checker:
         """
         raise NotImplementedError()
 
-    @staticmethod
-    def name() -> str:
+    def name(self) -> str:
         """ Called when filling send/awaited values in example for user """
         raise NotImplementedError()
 

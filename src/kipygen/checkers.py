@@ -15,8 +15,7 @@ class AnyValue(Checker):
     def output_value(self, generator_output: Any) -> str:
         return ''
 
-    @staticmethod
-    def name() -> str:
+    def name(self) -> str:
         return "Any"
 
     @staticmethod

@@ -69,9 +69,9 @@ class TaskRange(metaclass=TaskMeta):
         while True:
             start = randint(0, 65536)
             end = start + randint(1, 5)
-            send: List[Union[int, None]] = [start, end]
-            awaited: List[Union[int, None]] = [None, None]
-            send.extend((None for _ in range(start, end+1)))
+            send: List[Union[int, AnyValue]] = [start, end]
+            awaited: List[Union[int, AnyValue]] = [AnyValue(), AnyValue()]
+            send.extend((AnyValue() for _ in range(start, end+1)))
             awaited.extend((range(start, end+1)))
             yield ValuesTuple(send, awaited)
 
