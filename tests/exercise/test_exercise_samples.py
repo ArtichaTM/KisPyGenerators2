@@ -42,7 +42,6 @@ class TestTaskRange(TestCase):
         if cl_concat is None:
             self.skipTest("Can't find task TaskConcat")
         e = Exercise([cl_range, cl_concat])
-        print(e.description())
         self.assertEqual(cl_range.complexity + cl_concat.complexity, e.complexity)
 
         def gen():
