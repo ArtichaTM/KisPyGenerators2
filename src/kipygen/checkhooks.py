@@ -1,6 +1,11 @@
 from typing import Any
 
 
+__all__ = (
+    'CheckHook',
+)
+
+
 class CheckHook:
     """
     Checker class, but in comparison with Checker, this class invoked with generator

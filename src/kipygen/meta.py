@@ -72,4 +72,3 @@ class TaskMeta(type):
         for task in cls.all_tasks:
             if task.__qualname__ == name:
                 return task
-
