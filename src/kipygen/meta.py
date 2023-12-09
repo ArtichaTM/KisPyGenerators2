@@ -1,4 +1,4 @@
-from typing import Any, Generator, List, NamedTuple, Callable, Union, Tuple
+from typing import Any, Generator, List, NamedTuple, Callable, Union
 
 __all__ = (
     'TaskMeta',

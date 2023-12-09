@@ -1,6 +1,6 @@
 from functools import partial
 from io import StringIO
-from typing import Dict, Generator, List, Callable, Set, Tuple, TypeVar, Union
+from typing import Dict, Generator, List, Callable, Tuple, TypeVar, Union
 from random import shuffle
 from itertools import combinations
 from math import factorial
