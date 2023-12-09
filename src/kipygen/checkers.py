@@ -5,6 +5,7 @@ __all__ = (
     'Checker',
     'AnyValue',
     'AnyValueExcept',
+    'AnyValueExceptType',
 )
 
 

@@ -1,7 +1,7 @@
 from itertools import chain
 from typing import Generator, Any, Iterable, List, Optional, Tuple, TypeVar, Union
 from io import StringIO
-from random import choices, choice, randint, triangular
+from random import choices, choice, randint, shuffle, triangular
 from queue import Queue
 
 from .meta import TaskMeta, ValuesTuple
@@ -487,20 +487,23 @@ class TaskFibonacci(metaclass=TaskMeta):
                 ],
                 [0, 1, 1, 2, 3, 5, 8, 13, None]
             ),
+            ValuesTuple(
+                [None, AnyValue(), AnyValue(), AnyValue(), AnyValue(), GenThrow(StopIteration)],
+                [0, 1, 1, 2, 3, None]
+            ),
         )
-        while True:
-            send = [None]  # 1, None
-            awaited = []  # 1, 0
-            gen = cls.generator()
-            next(gen)
-            for value in iterations_limit(gen, randint(0, 40)):
-                send.append(AnyValue())
-                awaited.append(value)
-            # 1+n, n
-            send.append(GenThrow(StopIteration))  # 1+n, n
-            awaited.append(next(gen))  # 1+n+1, n+1
-            awaited.append(None)  # 1+n+1, n+1+1
-            yield ValuesTuple(send, awaited)
+        send = [None]  # 1, None
+        awaited = []  # 1, 0
+        gen = cls.generator()
+        next(gen)
+        for value in iterations_limit(gen, 5000):
+            send.append(AnyValue())
+            awaited.append(value)
+        # 1+n, n
+        send.append(GenThrow(StopIteration))  # 1+n, n
+        awaited.append(next(gen))  # 1+n+1, n+1
+        awaited.append(None)  # 1+n+1, n+1+1
+        yield ValuesTuple(send, awaited)
 
     @staticmethod
     def name() -> str:
@@ -560,15 +563,16 @@ class TaskNotationCounter(metaclass=TaskMeta):
             10: lambda x: str(x),
             16: lambda x: hex(x)[2:]
         }
+        notations = [2, 8, 10, 16]
         while True:
             send = []
             awaited = []
             counter = 0
-            for _ in range(randint(1, 5)):
-                notation = choice((2, 8, 10, 16))
+            shuffle(notations)
+            for notation in notations:
                 send.append(notation)
                 awaited.append(funcs[notation](counter))
-                for number in range(randint(1, 5)):
+                for number in range(randint(1, 15)):
                     counter += 1
                     send.append(AnyValueExceptType(int))
                     awaited.append(funcs[notation](counter))
