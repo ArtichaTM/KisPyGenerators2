@@ -101,5 +101,3 @@ class AnyValueExceptType(Checker):
     def description(self) -> str:
         return (f"любое значение любого типа данных кроме одного типа данных "
                 f"(здесь: {self.dtype.__qualname__})")
-
-

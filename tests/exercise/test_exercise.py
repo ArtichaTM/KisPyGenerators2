@@ -1,6 +1,6 @@
 from unittest import TestCase
 from random import choices, randint, shuffle
-from functools import partial, partialmethod
+from functools import partialmethod
 
 from kipygen import Exercise, TaskMeta, iterations_limit
 

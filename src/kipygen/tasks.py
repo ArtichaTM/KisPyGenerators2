@@ -591,7 +591,6 @@ class TaskNotationCounter(metaclass=TaskMeta):
         )
 
 
-
 # class TaskTEMPLATE(metaclass=TaskMeta):
 #     complexity = 5
 #     _gen_annotation = Generator['AWAITED_VALUE', 'SEND_VALUE', None]
