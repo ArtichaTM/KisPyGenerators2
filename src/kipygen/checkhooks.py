@@ -39,6 +39,13 @@ class CheckHook:
         send_value: Any,
         timeout: Union[int, float]
     ) -> Any:
+        """ Called when needed next value from generator
+        :param function: Intermidiate function to call generator methods
+        :param gen: Running generator to validate
+        :param send_value: Value, passing to generator (send_value == self)
+        :param timeout: how many second wait answer from generator thread
+        :return: value from generator
+        """
         return function(gen.send, send_value, timeout)
 
     def name(self) -> str:
