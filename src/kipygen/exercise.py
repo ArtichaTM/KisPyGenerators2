@@ -6,7 +6,7 @@ from itertools import combinations
 from math import factorial
 from threading import Thread
 
-from .meta import TaskMeta, ValuesTuple, Checker
+from .meta import TaskMeta, ValuesTuple, Checker, CheckHook
 from .tasks import iterations_limit
 
 
@@ -77,7 +77,10 @@ class Exercise:
         try:
             timeout_call(gen.send, None, timeout=TIMEOUT)
             for send, awaited in zip(check_values.send, check_values.awaited):
-                gen_out = timeout_call(gen.send, send, timeout=TIMEOUT)
+                if isinstance(send, CheckHook):
+                    gen_out = send(timeout_call, gen.send, send, timeout=TIMEOUT)
+                else:
+                    gen_out = timeout_call(gen.send, send, timeout=TIMEOUT)
                 if isinstance(awaited, Checker):
                     gen_out = awaited.output_value(gen_out)
                     if gen_out:

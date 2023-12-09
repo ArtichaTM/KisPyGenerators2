@@ -5,7 +5,7 @@ from random import choices, choice, randint, triangular
 from queue import Queue
 
 from .meta import TaskMeta, ValuesTuple
-from .checkers import AnyValue, AnyValueExcept
+from .checkers import AnyValue
 
 
 __all__ = (
