@@ -1,5 +1,6 @@
 from unittest import TestCase
 from random import choices, randint, shuffle
+from functools import partial, partialmethod
 
 from kipygen import Exercise, TaskMeta, iterations_limit
 
@@ -10,11 +11,6 @@ class TestExercise(TestCase):
     def setUp(self):
         if len(TaskMeta.all_tasks) < 2:
             self.skipTest('Not enough tasks to check Exercise')
-
-    def test_all_solo_tasks(self):
-        for task in TaskMeta.all_tasks:
-            e = Exercise([task])
-            self.assertEqual('', e.validate(task.generator))
 
     def test_complexity_calculator(self):
         assert len(TaskMeta.all_tasks) >= 2
@@ -77,3 +73,18 @@ class TestExercise(TestCase):
                     f'\nSend:    {len(check_values)} - {check_values.send}'
                     f'\nAwaited: {len(check_values)} - {check_values.awaited}'
                 )
+
+
+def fill_with_tests(cl):
+    for task in TaskMeta.all_tasks:
+        def function(self, _task):
+            e = Exercise([_task])
+            self.assertEqual('', e.validate(_task.generator))
+        function = partialmethod(function, _task=task)
+        setattr(cl, f"test_{task.__qualname__}", function)
+    return cl
+
+
+@fill_with_tests
+class TestEveryTask(TestCase):
+    pass
