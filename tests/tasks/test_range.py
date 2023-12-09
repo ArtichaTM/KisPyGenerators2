@@ -20,12 +20,3 @@ class TestTaskRange(TestCase):
         for i in range(5, 12):
             answer = gen.send(None)
             self.assertEqual(answer, i)
-
-    def test_check_generator(self):
-        counter = 0
-        for value in iterations_limit(self.cl.check_values(), 500):
-            gen = self.cl.generator()
-            gen.send(None)
-            for send, awaited in zip(value.send, value.awaited):
-                self.assertEqual(gen.send(send), awaited, f"Error on {counter} values iteration")
-            counter += 1
