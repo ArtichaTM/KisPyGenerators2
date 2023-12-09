@@ -76,7 +76,11 @@ class TaskMeta(type):
 
 
 class Checker:
-    """ Checker class, to verify generator correctness """
+    """
+    Checker class, to verify generator correctness
+    send_value or output_value can be undefined. In that case, this
+    checker should not be used in corresponding lists
+    """
     def send_value(self) -> Any:
         """ Called when Checker place in send values list"""
         raise NotImplementedError()
