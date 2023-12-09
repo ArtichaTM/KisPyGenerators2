@@ -1,5 +1,5 @@
 from queue import Queue
-from typing import Any, Union, Type, Generator
+from typing import Any, Type, Generator
 
 __all__ = (
     'CheckHook',
