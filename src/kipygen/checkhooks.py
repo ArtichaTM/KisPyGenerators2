@@ -40,7 +40,7 @@ class CheckHook:
         timeout: Union[int, float]
     ) -> Any:
         """ Called when needed next value from generator
-        :param function: Intermidiate function to call generator methods
+        :param function: Intermediate function to call generator methods
         :param gen: Running generator to validate
         :param send_value: Value, passing to generator (send_value == self)
         :param timeout: how many second wait answer from generator thread
