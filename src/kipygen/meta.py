@@ -96,8 +96,7 @@ class Checker:
         """ Called when filling send/awaited values in example for user """
         raise NotImplementedError()
 
-    @staticmethod
-    def description() -> str:
+    def description(self) -> str:
         """
         Called after all send/awaited values printed
         to specify checker functionality

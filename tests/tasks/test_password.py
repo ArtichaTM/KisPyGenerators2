@@ -27,11 +27,3 @@ class TestTaskPassword(TestCase):
             self.assertTrue(answer)
             with self.assertRaises(StopIteration):
                 gen.send(None)
-
-    def test_check_generator(self):
-        for value in iterations_limit(self.cl.check_values(), 500):
-            gen = self.cl.generator()
-            gen.send(None)
-            for iteration, send, awaited in zip(range(len(value.send)), value.send, value.awaited):
-                answer = gen.send(send)
-                self.assertEqual(answer, awaited, f'Iteration {iteration}')

@@ -5,7 +5,7 @@ from random import choices, choice, randint, triangular
 from queue import Queue
 
 from .meta import TaskMeta, ValuesTuple
-from .checkers import AnyValue
+from .checkers import AnyValue, AnyValueExcept
 
 
 __all__ = (
@@ -179,23 +179,23 @@ class TaskPassword(metaclass=TaskMeta):
         yield from (
             ValuesTuple(
                 ["Password", 2, '', "Password"],
-                [None, False, False, True]
+                [AnyValue(), False, False, True]
             ),
             ValuesTuple(
                 [1, 2, '', 1],
-                [None, False, False, True]
+                [AnyValue(), False, False, True]
             ),
             ValuesTuple(
                 [1, 1],
-                [None, True]
+                [AnyValue(), True]
             ),
             ValuesTuple(
                 ['', ''],
-                [None, True]
+                [AnyValue(), True]
             ),
             ValuesTuple(
                 [checker, checker],
-                [None, True]
+                [AnyValue(), True]
             ),
         )
 
@@ -203,7 +203,7 @@ class TaskPassword(metaclass=TaskMeta):
 
         for password in password_examples:
             send = [password]
-            awaited = [None]
+            awaited = [AnyValue()]
 
             fake_passwords = cls.generate_fakes(password)
             send.extend(fake_passwords)
@@ -268,31 +268,31 @@ class TaskCalculator(metaclass=TaskMeta):
         yield from (
             ValuesTuple(
                 [0, ('+', 5), None],
-                [0, 5, None]
+                [0, 5, AnyValue()]
             ),
             ValuesTuple(
                 [70, ('*', 2), None],
-                [70, 140, None]
+                [70, 140, AnyValue()]
             ),
             ValuesTuple(
                 [70, ('*', 2), ('-', 2), None],
-                [70, 140, 138, None]
+                [70, 140, 138, AnyValue()]
             ),
             ValuesTuple(
                 [3, ('/', 2), ('*', 2), None],
-                [3, 1.5, 3, None]
+                [3, 1.5, 3, AnyValue()]
             ),
             ValuesTuple(
                 [3, ('/', 2), ('*', 2), None],
-                [3, 1.5, 3, None]
+                [3, 1.5, 3, AnyValue()]
             ),
             ValuesTuple(
                 [70, ('/', 0), ('+', 1), None],
-                [70, 70, 71, None]
+                [70, 70, 71, AnyValue()]
             ),
             ValuesTuple(
                 [70, None],
-                [70, None]
+                [70, AnyValue()]
             ),
         )
         while True:
@@ -322,7 +322,7 @@ class TaskCalculator(metaclass=TaskMeta):
                 awaited.append(number)
 
             send.append(None)
-            awaited.append(None)
+            awaited.append(AnyValue())
             yield ValuesTuple(send, awaited)
 
     @staticmethod

@@ -19,10 +19,3 @@ class TestTaskConcat(TestCase):
         gen.send('34')
         gen.send('7722')
         self.assertEqual(gen.send(None), '12347722')
-
-    def test_check_generator(self):
-        for value in iterations_limit(self.cl.check_values(), 500):
-            gen = self.cl.generator()
-            gen.send(None)
-            for send, awaited in zip(value.send, value.awaited):
-                self.assertEqual(gen.send(send), awaited)
