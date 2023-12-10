@@ -108,6 +108,7 @@ class Exercise:
                     gen_out = awaited.output_value(gen_out)
                     if gen_out:
                         if gen_out == 'FINISH':
+                            q_in.put((None, None))
                             return ''
                         output.write(gen_out)
                         break
