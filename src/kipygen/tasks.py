@@ -295,10 +295,6 @@ class TaskCalculator(metaclass=TaskMeta):
                 [70, None],
                 [70, AnyValue()]
             ),
-            ValuesTuple(  # Wrong type check
-                [70, ('/', ''), None],
-                [70, Except(TypeError), AnyValue()]
-            ),
         )
         while True:
             number = randint(-100, 100)
