@@ -123,7 +123,11 @@ class Except(Checker):
         self.exception = exception
 
     def output_value(self, exception: Raised) -> str:
-        assert isinstance(exception, Raised)
+        if not isinstance(exception, Raised):
+            return (
+                f'Ожидалось исключение {type(self.exception).__qualname__}, '
+                f'однако получено {type(exception).__qualname__} ({exception})'
+            )
         exception = exception.exception
         assert isinstance(exception, BaseException)
         v = (
@@ -150,9 +154,15 @@ class ExceptWithArgs(Checker):
     __slots__ = ('exception',)
 
     def __init__(self, exception: BaseException):
+        assert isinstance(exception, BaseException)
         self.exception = exception
 
     def output_value(self, exception: BaseException) -> str:
+        if not isinstance(exception, Raised):
+            return (
+                f'Ожидалось исключение {type(self.exception).__qualname__}, '
+                f'однако получено {type(exception).__qualname__} ({exception})'
+            )
         assert isinstance(exception, Raised)
         exception = exception.exception
         assert isinstance(exception, BaseException)
