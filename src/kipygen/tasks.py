@@ -1,3 +1,4 @@
+import math
 from itertools import chain
 from typing import Generator, Any, Iterable, List, Optional, Tuple, TypeVar, Union
 from io import StringIO
@@ -5,7 +6,7 @@ from random import choices, choice, randint, shuffle, triangular
 from queue import Queue
 
 from .meta import TaskMeta, ValuesTuple
-from .checkers import AnyValue, AnyValueExceptType, Except
+from .checkers import AnyValue, AnyValueExceptType, FloatCompare, ExceptWithArgs
 from .checkhooks import GenThrow
 
 
@@ -592,6 +593,152 @@ class TaskNotationCounter(metaclass=TaskMeta):
             "Возвращать числа от 0 до ∞ в указанной системе счисления, меняя её при "
             "получении целого числа (менять при числах 2, 8, 10, 16, остальные игнорировать)",
             "В случае вызова исключения StopIteration вернуть None и закончить задачу"
+        )
+
+
+class TaskCompleteCalculator(metaclass=TaskMeta):
+    complexity = 12
+    _number = Union[float, int]
+    _gen_annotation = Generator[_number, Optional[Tuple[str, _number]], None]
+
+    @staticmethod
+    def generator() -> _gen_annotation:
+        output = yield 0
+        while True:
+            values = yield output
+            if values is None:
+                break
+            operation, new_number = values
+            operation: str
+            new_number: Union[float, int]
+            if operation == '+':
+                output += new_number
+            elif operation == '-':
+                output -= new_number
+            elif operation == '*':
+                output *= new_number
+            elif operation == '/':
+                if new_number == 0:
+                    raise NotImplementedError()
+                output /= new_number
+            elif operation == 'log':
+                output = math.log(output, new_number)
+            elif operation == 'sin':
+                output = math.sin(output)
+            elif operation == 'cos':
+                output = math.cos(output)
+            elif operation == 'tan':
+                check_value = output % 2*math.pi
+                if any((
+                        (check_value - math.pi/2) > 0.001,
+                        (check_value - 3*math.pi/2) > 0.001
+                )):
+                    raise NotImplementedError()
+                output = math.tan(output)
+            if int(output) == output:
+                output = int(output)
+        yield None
+
+    @classmethod
+    def check_values(cls) -> Generator[ValuesTuple, None, None]:
+        av = AnyValue
+        yield from (
+            ValuesTuple(
+                [0, ('+', 5), None],
+                [0, 5, av()]
+            ),
+            ValuesTuple(
+                [70, ('*', 2), None],
+                [70, 140, av()]
+            ),
+            ValuesTuple(
+                [math.pi/6, ('sin', av()), None],
+                [math.pi/6, FloatCompare(0.5), av()]
+            ),
+            ValuesTuple(
+                [70, ('*', 2), ('-', 2), None],
+                [70, 140, 138, av()]
+            ),
+            ValuesTuple(
+                [3, ('/', 2), ('*', 2), None],
+                [3, 1.5, 3, av()]
+            ),
+            ValuesTuple(
+                [3, ('/', 2), ('*', 2), None],
+                [3, 1.5, 3, av()]
+            ),
+            ValuesTuple(
+                [70, ('/', 0)],
+                [70, ExceptWithArgs(NotImplementedError())]
+            ),
+            ValuesTuple(
+                [70, ('/', 0)],
+                [70, ExceptWithArgs(NotImplementedError())]
+            ),
+            ValuesTuple(
+                [math.pi/2, ('tan', 0)],
+                [math.pi/2, ExceptWithArgs(NotImplementedError())]
+            ),
+            ValuesTuple(
+                [3*math.pi/2, ('tan', 0)],
+                [3*math.pi/2, ExceptWithArgs(NotImplementedError())]
+            ),
+            ValuesTuple(
+                [70, None],
+                [70, AnyValue()]
+            ),
+        )
+        while True:
+            number = randint(-100, 100)
+            send = []
+            awaited = []
+
+            send.append(number)
+            awaited.append(number)
+
+            for _ in range(randint(0, 10)):
+                new_number = randint(-100, 100)
+                operation = choice(('+', '-', '*', '/', 'log', 'sin', 'cos', 'tan'))
+                if operation == '+':
+                    number += new_number
+                elif operation == '-':
+                    number -= new_number
+                elif operation == '*':
+                    number *= new_number
+                elif operation == '/':
+                    if new_number == 0:
+                        continue
+                    number /= new_number
+                else:
+                    continue
+                if int(number) == number:
+                    number = int(number)
+                send.append((operation, new_number))
+                awaited.append(number)
+
+            send.append(None)
+            awaited.append(av())
+            yield ValuesTuple(send, awaited)
+
+    @staticmethod
+    def name() -> str:
+        return 'Сложный калькулятор'
+
+    @staticmethod
+    def short_description() -> tuple:
+        return (
+            "В первую очередь в генератор передаётся изначальное число, "
+            "над которым будут производится операции, возвращая его обратно. "
+            "Дальше в генератор будут передаваться пары (операция, число), где:",
+            "> число: любое число типа float или int",
+            "> простые операции: символ +, -, *, / для выполнения соответствующих операций."
+            "например, кортеж ('+', 2) требует операции сложение с числом 2",
+            '> Логарифмирование: log. Второй аргумент целое число либо константа e'
+            "('log', 2), требует найти от текущего число логарифм 2 степени",
+            '> Тригонометрические функции: cos, sin, tan. Аргументом считается текущее '
+            'число в радианах, второй аргумент не важен',
+            'В случае невозможности выполнить математическую операцию '
+            'вызвать исключение NotImplementedError'
         )
 
 
