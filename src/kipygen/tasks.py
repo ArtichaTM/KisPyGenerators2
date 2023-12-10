@@ -5,7 +5,7 @@ from random import choices, choice, randint, shuffle, triangular
 from queue import Queue
 
 from .meta import TaskMeta, ValuesTuple
-from .checkers import AnyValue, AnyValueExceptType
+from .checkers import AnyValue, AnyValueExceptType, Except
 from .checkhooks import GenThrow
 
 
@@ -294,6 +294,10 @@ class TaskCalculator(metaclass=TaskMeta):
             ValuesTuple(
                 [70, None],
                 [70, AnyValue()]
+            ),
+            ValuesTuple(  # Wrong type check
+                [70, ('/', ''), None],
+                [70, Except(TypeError), AnyValue()]
             ),
         )
         while True:

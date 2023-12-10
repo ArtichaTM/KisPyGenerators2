@@ -8,7 +8,7 @@ from threading import Thread
 from queue import Queue
 
 from .meta import TaskMeta, ValuesTuple
-from .checkers import Checker
+from .checkers import Checker, Raised
 from .checkhooks import CheckHook
 from .tasks import iterations_limit
 
@@ -54,7 +54,10 @@ def checker_thread(q_in: Queue, q_out: Queue):
         method, value = q_in.get()
         if method is None:
             break
-        value = method(value)
+        try:
+            value = method(value)
+        except BaseException as e:
+            value = Raised(e)
         q_in.task_done()
         q_out.put(value)
 
@@ -104,8 +107,12 @@ class Exercise:
                 if isinstance(awaited, Checker):
                     gen_out = awaited.output_value(gen_out)
                     if gen_out:
+                        if gen_out == 'FINISH':
+                            return ''
                         output.write(gen_out)
                         break
+                elif isinstance(gen_out, Raised):
+                    raise gen_out.exception
                 elif gen_out != awaited:
                     output.write(
                         f"От генератора ожидалось значение {awaited}, "
