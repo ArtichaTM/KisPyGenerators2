@@ -141,7 +141,7 @@ class Except(Checker):
 
     def description(self) -> str:
         return (
-            "Вызванное генератором исключение нужного класса "
+            "вызванное генератором исключение нужного класса "
             f"(здесь: {type(self.exception)})"
         )
 
@@ -181,6 +181,6 @@ class ExceptWithArgs(Checker):
 
     def description(self) -> str:
         return (
-            "Вызванное генератором исключение нужного класса и с нужными аргументами "
+            "вызванное генератором исключение нужного класса и с нужными аргументами "
             f"(здесь: исключение={type(self.exception)}, аргументы={self.exception.args})"
         )
