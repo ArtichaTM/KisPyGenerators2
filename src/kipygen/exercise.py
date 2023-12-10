@@ -1,6 +1,5 @@
-from functools import partial
 from io import StringIO
-from typing import Dict, Generator, List, Callable, Tuple, TypeVar, Union
+from typing import Dict, Generator, List, Callable, Tuple, TypeVar
 from random import shuffle
 from itertools import combinations
 from math import factorial
@@ -16,37 +15,6 @@ from .tasks import iterations_limit
 T = TypeVar('T')
 T1 = TypeVar('T1')
 T2 = TypeVar('T2')
-
-
-def _timeout_call(
-        function: Callable[[T1], T2],
-        values: list,
-        *args: T1,
-        **kwargs: T1
-) -> None:
-    values.append(function(*args, **kwargs))
-
-
-def timeout_call(
-        _function: Callable[[T1], T2],
-        *args: T1,
-        timeout: Union[float, int] = 3,
-        **kwargs: T1
-) -> T2:
-    output = []
-    function = partial(_timeout_call, _function, output)
-
-    thread = Thread(
-        target=function,
-        args=args,
-        kwargs=kwargs, name='Function check thread',
-        daemon=True
-    )
-    thread.start()
-    thread.join(timeout)
-    if thread.is_alive():
-        raise TimeoutError()
-    return output[0]
 
 
 def checker_thread(q_in: Queue, q_out: Queue):
