@@ -183,7 +183,7 @@ class ExceptWithArgs(Checker):
         return ''
 
     def name(self) -> str:
-        return f"Raised {type(self.exception).__qualname__}({self.exception.args})"
+        return f"Raised {type(self.exception).__qualname__}{self.exception.args}"
 
     def description(self) -> str:
         return (
