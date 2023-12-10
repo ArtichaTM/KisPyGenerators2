@@ -184,7 +184,7 @@ class ExceptWithArgs(Checker):
                     f"имеет {len(got_arguments)} аргументов"
                 )
             else:
-                return f"Исключение имеет аргументы, хотя они не ожидались"
+                return "Исключение имеет аргументы, хотя они не ожидались"
         for i in range(len(expected_arguments)):
             expected = expected_arguments[i]
             got = got_arguments[i]
@@ -221,4 +221,3 @@ class FloatCompare(Checker):
 
     def description(self) -> str:
         return 'примерное число'
-
