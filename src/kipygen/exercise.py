@@ -103,7 +103,7 @@ class Exercise:
         except Exception as e:
             output.write(
                 f"Неожиданное исключение: "
-                f"{type(e).__qualname__}({e.args[0]})"
+                f"{type(e).__qualname__}({e.args})"
             )
 
         # Error happened
