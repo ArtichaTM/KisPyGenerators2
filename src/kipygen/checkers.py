@@ -153,6 +153,9 @@ class ExceptWithArgs(Checker):
         self.exception = exception
 
     def output_value(self, exception: BaseException) -> str:
+        assert isinstance(exception, Raised)
+        exception = exception.exception
+        assert isinstance(exception, BaseException)
         v = (
             f'Ожидалось исключение {type(self.exception).__qualname__}, '
             f'однако получено {type(exception).__qualname__}'
@@ -164,11 +167,14 @@ class ExceptWithArgs(Checker):
         expected_arguments = self.exception.args
         got_arguments = exception.args
         if len(expected_arguments) != len(got_arguments):
-            return (
-                f"Ожидалось исключение с {len(expected_arguments)} аргументами, "
-                f"однако исключение {type(exception).__qualname__} "
-                f"имеет {len(got_arguments)} аргументов"
-            )
+            if len(expected_arguments):
+                return (
+                    f"Ожидалось исключение с {len(expected_arguments)} аргументами, "
+                    f"однако исключение {type(exception).__qualname__} "
+                    f"имеет {len(got_arguments)} аргументов"
+                )
+            else:
+                return f"Исключение имеет аргументы, хотя они не ожидались"
         for i in range(len(expected_arguments)):
             expected = expected_arguments[i]
             got = got_arguments[i]
