@@ -200,3 +200,25 @@ class ExceptWithArgs(Checker):
             "вызванное генератором исключение нужного класса и с нужными аргументами "
             f"(здесь: исключение={type(self.exception)}, аргументы={self.exception.args})"
         )
+
+
+class FloatCompare(Checker):
+    __slots__ = ('number', 'delta')
+
+    def __init__(self, number: float, delta: float = 0.001):
+        self.number = number
+        self.delta = delta
+
+    def output_value(self, number: float) -> str:
+        if abs(self.number - number) > self.delta:
+            return f'Число {number:.6f} примерно не равно {self.number:.6f}'
+
+    def name(self) -> str:
+        if self.delta < 0.001:
+            return f"~{self.number}"
+        else:
+            return f"{self.number}±{self.delta}"
+
+    def description(self) -> str:
+        return 'примерное число'
+
