@@ -32,6 +32,9 @@ class CheckHook:
     """
     __slots__ = ()
 
+    def __repr__(self) -> str:
+        return f"<CheckHook {type(self).__qualname__}>"
+
     def __call__(
         self,
         q_in: Queue,
