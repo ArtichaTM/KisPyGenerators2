@@ -131,6 +131,19 @@ class Exercise:
 
         return output.getvalue()
 
+    def save(self) -> tuple[str, ...]:
+        return tuple((task.__qualname__ for task in self.tasks))
+
+    @classmethod
+    def load(cls, tasks: tuple[str, ...]) -> 'Exercise':
+        e_tasks = []
+        for task in tasks:
+            task = TaskMeta.find_task(task)
+            if task is None:
+                raise RuntimeError(f'Error during loading task {task}: no such task found')
+            e_tasks.append(task)
+        return Exercise(tuple(e_tasks))
+
     def check_values(self) -> Generator[ValuesTuple, None, None]:
         """
         Returns generator of ValuesTuple based on all current tasks

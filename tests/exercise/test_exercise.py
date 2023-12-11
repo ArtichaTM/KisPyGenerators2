@@ -74,6 +74,17 @@ class TestExercise(TestCase):
                     f'\nAwaited: {len(check_values)} - {check_values.awaited}'
                 )
 
+    def test_save_load(self):
+        task1, task2 = choices(TaskMeta.all_tasks, k=2)
+        e1 = Exercise([task1, task2])
+        values = e1.save()
+        e2 = Exercise.load(values)
+        self.assertEqual(len(e1.tasks), len(e2.tasks))
+        for left, right in zip(e1.tasks, e2.tasks):
+            left: TaskMeta
+            right: TaskMeta
+            self.assertEqual(left.__qualname__, right.__qualname__)
+
 
 def fill_with_tests(cl):
     for task in TaskMeta.all_tasks:
