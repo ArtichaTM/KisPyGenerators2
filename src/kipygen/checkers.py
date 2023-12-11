@@ -7,6 +7,9 @@ __all__ = (
     'AnyValue',
     'AnyValueExcept',
     'AnyValueExceptType',
+    'Except',
+    'ExceptWithArgs',
+    'FloatCompare',
 )
 
 
