@@ -12,7 +12,67 @@
 * Понимание метода Generator.send()
 * Понимание концепции передачи данных из и в генератор
 ## Примеры
-TODO
+#### Создание описания задач
+```python
+# Импортируем класс Exercise
+from kipygen import Exercise
+
+# Проходим циклом по всем задачам со сложностью от 10 до 20
+for exercise in Exercise.random_range(10, 20):
+
+  # Выведем описание упражнения
+  print(exercise.description(), end='\n\n')
+```
+#### Сериализация и десериализация упражнений
+```python
+# Импортируем класс Exercise
+from kipygen import Exercise, TaskMeta
+
+# Создаём упражнение, состоящие из первых двух существующих задач
+e1 = Exercise([TaskMeta.all_tasks[0], TaskMeta.all_tasks[1]])
+
+# Сериализация
+values: tuple[str, ...] = e1.save()
+
+# Проверка
+assert isinstance(values, tuple)
+assert all((isinstance(i, str) for i in values))
+
+# Десериализация
+e2 = Exercise.load(values)
+
+# Проверяем сходство
+for left, right in zip(e1.tasks, e2.tasks):
+    assert left.__qualname__ == right.__qualname__
+```
+#### Проверка существующего генератора
+```python
+# Импортируем класс Exercise
+from kipygen import Exercise
+
+# Загружаем задачи
+e = Exercise.load(('TaskRange', 'TaskPassword'))
+
+# Создаём генератор, решающий задачу
+def gen():
+    start = yield
+    end = yield
+    password = None
+    yield
+    while start <= end:
+        password = yield start
+        start += 1
+    new_password = yield
+    while True:
+        if new_password == password:
+            break
+        new_password = yield False
+    yield True
+
+# Проверяем, отсутствуют ли ошибки
+assert '' == e.validate(gen)
+```
+
 ## Описание методов и переменных
 В данном разделе описываются классы, их методы и переменные, рекомендуемые для взаимодействия с библиотекой.
 
