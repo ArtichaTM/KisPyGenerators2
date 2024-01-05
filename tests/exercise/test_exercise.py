@@ -16,7 +16,7 @@ class TestExercise(TestCase):
         assert len(TaskMeta.all_tasks) >= 2
         for _ in range(8):
             tasks = choices(TaskMeta.all_tasks, k=randint(1, len(TaskMeta.all_tasks)))
-            e = Exercise(tasks)
+            e = Exercise([task(*next(task.init_values())) for task in tasks])
             self.assertEqual(sum((i.complexity for i in tasks)), e.complexity)
 
     def test_random(self):
@@ -34,7 +34,7 @@ class TestExercise(TestCase):
 
     def random_range(self, _min: int, _max: int):
         for exercise in Exercise.random_range(_min, _max):
-            text = ', '.join((i.__qualname__ for i in exercise.tasks))
+            text = ', '.join((type(i).__qualname__ for i in exercise.tasks))
             text = (
                 f"Exercise {exercise} with {text} complexity not in range "
                 f"{_min} <= {exercise.complexity} <= {_max}"
@@ -68,7 +68,7 @@ class TestExercise(TestCase):
                 self.assertEqual(
                     len(check_values.send),
                     len(check_values.awaited),
-                    f'Task {exercise.tasks[0].__qualname__} send and awaited lists length'
+                    f'Task {type(exercise.tasks[0]).__qualname__} send and awaited lists length'
                     ' are not equal:'
                     f'\nSend:    {len(check_values)} - {check_values.send}'
                     f'\nAwaited: {len(check_values)} - {check_values.awaited}'
@@ -76,14 +76,20 @@ class TestExercise(TestCase):
 
     def test_save_load(self):
         task1, task2 = choices(TaskMeta.all_tasks, k=2)
-        e1 = Exercise([task1, task2])
+        e1 = Exercise([
+            task1(*next(task1.init_values())),
+            task2(*next(task2.init_values()))
+        ])
         values = e1.save()
         e2 = Exercise.load(values)
         self.assertEqual(len(e1.tasks), len(e2.tasks))
         for left, right in zip(e1.tasks, e2.tasks):
             left: TaskMeta
             right: TaskMeta
-            self.assertEqual(left.__qualname__, right.__qualname__)
+            self.assertEqual(type(left).__qualname__, type(right).__qualname__)
+
+    def test_save_load_extended(self):
+        pass
 
 
 def fill_with_tests(cl):
@@ -91,8 +97,8 @@ def fill_with_tests(cl):
         def function(self, _task):
             e = Exercise([_task])
             self.assertEqual('', e.validate(_task.generator))
-        function = partialmethod(function, _task=task)
-        setattr(cl, f"test_{task.__qualname__}", function)
+        function = partialmethod(function, _task=task(*next(task.init_values())))
+        setattr(cl, f"test_{type(task).__qualname__}", function)
     return cl
 
 

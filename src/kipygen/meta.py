@@ -1,4 +1,4 @@
-from typing import Any, Generator, List, NamedTuple, Callable, Union
+from typing import Any, Generator, List, NamedTuple, Callable, Optional, Union
 
 __all__ = (
     'TaskMeta',
@@ -35,19 +35,14 @@ class TaskMeta(type):
         # Task.complexity
         complexity = attrs.get('complexity', checker)
         assert complexity is not checker, f"No complexity attribute found {ending}"
-        assert isinstance(complexity, int), f"Complexity is not type of int {ending}"
 
         # Task.generator()
         generator = attrs.get('generator', checker)
         assert generator is not checker, f"No generator method found {ending}"
-        assert isinstance(generator, staticmethod), f"Generator method should be static {ending}"
 
         # Task.check_values()
         check_values = attrs.get('check_values', checker)
         assert check_values is not checker, f"No check_values method found {ending}"
-        assert \
-            isinstance(check_values, classmethod), \
-            f"Check_values method should be class method {ending}"
 
         # Task.name()
         name = attrs.get('name', checker)
@@ -57,8 +52,29 @@ class TaskMeta(type):
         # Task.short_description()
         short_description = attrs.get('short_description', checker)
         assert short_description is not checker, f"No short_description method found {ending}"
-        assert isinstance(short_description, staticmethod), \
-            f"Short_description method should be static {ending}"
+
+        # Task.save()
+        save = attrs.get('save', checker)
+        if save is checker:
+            attrs['save'] = save_method
+        save = save_method
+        assert save is not checker, f"No save method found {ending}"
+
+        # Task.init_values()
+        init_values = attrs.get('init_values', checker)
+        if init_values is checker:
+            attrs['init_values'] = init_values_method
+        init_values = init_values_method
+        assert init_values is not checker, f"No init_values method found {ending}"
+        assert isinstance(init_values, classmethod), \
+            f"init_values method should be class method {ending}"
+
+        # Task.__init__()
+        __init__ = attrs.get('__init__', checker)
+        if __init__ is checker:
+            attrs['__init__'] = init_method
+        __init__ = init_method
+        assert __init__ is not checker, f"No __init__ method found {ending}"
 
         cl = super().__new__(cls, class_name, bases, attrs)
         cls.all_tasks.append(cl)
@@ -68,7 +84,22 @@ class TaskMeta(type):
         return f"<{self.__qualname__} complexity={self.complexity}>"
 
     @classmethod
-    def find_task(cls, name: str) -> Union['TaskMeta', None]:
+    def find_task(cls, name: str) -> Optional['TaskMeta']:
         for task in cls.all_tasks:
             if task.__qualname__ == name:
                 return task
+
+
+@classmethod
+def save_method(cls: TaskMeta):
+    return (cls.__qualname__, )
+
+
+@classmethod
+def init_values_method(cls: TaskMeta):
+    while True:
+        yield (cls.__qualname__, )
+
+
+def init_method(self, values: tuple[str, ...]):
+    pass

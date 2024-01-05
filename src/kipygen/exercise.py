@@ -35,6 +35,7 @@ class Exercise:
 
     def __init__(self, tasks: List[TaskMeta]):
         assert isinstance(tasks, (tuple, list))
+        assert all((type(type(i)) is TaskMeta for i in tasks))
         assert tasks
         self.tasks = tuple(tasks)
         self.complexity = sum((t.complexity for t in tasks))
@@ -131,18 +132,18 @@ class Exercise:
 
         return output.getvalue()
 
-    def save(self) -> tuple[str, ...]:
-        return tuple((task.__qualname__ for task in self.tasks))
+    def save(self) -> tuple[tuple[str, ...], ...]:
+        return tuple((task.save() for task in self.tasks))
 
     @classmethod
-    def load(cls, tasks: tuple[str, ...]) -> 'Exercise':
+    def load(cls, tasks: tuple[str | tuple[str, ...], ...]) -> 'Exercise':
         e_tasks = []
         for task in tasks:
-            task = TaskMeta.find_task(task)
+            taskname = TaskMeta.find_task(task[0])
             if task is None:
                 raise RuntimeError(f'Error during loading task {task}: no such task found')
-            e_tasks.append(task)
-        return Exercise(tuple(e_tasks))
+            e_tasks.append(taskname(task))
+        return Exercise(e_tasks)
 
     def check_values(self) -> Generator[ValuesTuple, None, None]:
         """
@@ -204,7 +205,7 @@ class Exercise:
         new_tasks = TaskMeta.all_tasks
         shuffle(new_tasks)
         for tasks in cls._random_all_length(new_tasks):
-            yield Exercise(tasks)
+            yield Exercise([task(*next(task.init_values())) for task in tasks])
 
     @classmethod
     def random_range(

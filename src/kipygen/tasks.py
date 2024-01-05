@@ -742,6 +742,67 @@ class TaskCompleteCalculator(metaclass=TaskMeta):
         )
 
 
+class TaskFormalLanguage(metaclass=TaskMeta):
+    __slots__ = ('left', 'right')
+    complexity = 12
+    _gen_annotation = Generator[str, str, None]
+
+    def __init__(self, values: tuple[str, ...]):
+        assert isinstance(values[1], str)
+        assert isinstance(values[2], str)
+        self.left = values[1]
+        self.right = values[2]
+
+    def generator(self) -> _gen_annotation:
+        notation = yield None
+        counter: int = 0
+        value: str = ''
+        try:
+            while True:
+                if notation == 2:
+                    value = bin(counter)[2:]
+                elif notation == 8:
+                    value = oct(counter)[2:]
+                elif notation == 10:
+                    value = str(counter)
+                elif notation == 16:
+                    value = hex(counter)[2:]
+                new_notation = yield value
+                if isinstance(new_notation, int):
+                    notation = new_notation
+                counter += 1
+        except StopIteration:
+            yield None
+
+    def check_values(self) -> Generator[ValuesTuple, None, None]:
+        avet = AnyValueExceptType
+        yield from (
+            ValuesTuple(
+                [10, avet(int), avet(int), GenThrow(StopIteration)],
+                ['0', '1', '2', None]
+            ),
+            ValuesTuple(
+                [2, *([avet(int)]*2), 8, *([avet(int)]*5), GenThrow(StopIteration)],
+                ['0', '1', '10', '3', '4', '5', '6', '7', '10', None]
+            ),
+        )
+
+    @staticmethod
+    def name() -> str:
+        return 'Формальный генератор'
+
+    @staticmethod
+    def short_description() -> tuple:
+        return (
+            "Перед вами стоит задача построить строчку, "
+            "составленную из",
+        )
+
+    @classmethod
+    def init_values(cls) -> Generator[tuple[str, str], None, None]:
+        yield ('TaskFormalLanguage',)
+
+
 # class TaskTEMPLATE(metaclass=TaskMeta):
 #     complexity = 5
 #     _gen_annotation = Generator['AWAITED_VALUE', 'SEND_VALUE', None]
