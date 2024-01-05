@@ -141,7 +141,9 @@ class Exercise:
         for task_arguments in tasks:
             task_class = TaskMeta.find_task(task_arguments[0])
             if task_class is None:
-                raise RuntimeError(f'Error during loading task {task_arguments[0]}: no such task found')
+                raise RuntimeError(
+                    f'Error during loading task {task_arguments[0]}: no such task found'
+                )
             e_tasks.append(task_class(task_arguments))
         return Exercise(e_tasks)
 
