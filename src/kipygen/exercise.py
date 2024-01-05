@@ -138,11 +138,11 @@ class Exercise:
     @classmethod
     def load(cls, tasks: tuple[str | tuple[str, ...], ...]) -> 'Exercise':
         e_tasks = []
-        for task in tasks:
-            taskname = TaskMeta.find_task(task[0])
-            if task is None:
-                raise RuntimeError(f'Error during loading task {task}: no such task found')
-            e_tasks.append(taskname(task))
+        for task_arguments in tasks:
+            task_class = TaskMeta.find_task(task_arguments[0])
+            if task_class is None:
+                raise RuntimeError(f'Error during loading task {task_arguments[0]}: no such task found')
+            e_tasks.append(task_class(task_arguments))
         return Exercise(e_tasks)
 
     def check_values(self) -> Generator[ValuesTuple, None, None]:
@@ -205,7 +205,7 @@ class Exercise:
         new_tasks = TaskMeta.all_tasks
         shuffle(new_tasks)
         for tasks in cls._random_all_length(new_tasks):
-            yield Exercise([task(*next(task.init_values())) for task in tasks])
+            yield Exercise([task(next(task.init_values())) for task in tasks])
 
     @classmethod
     def random_range(

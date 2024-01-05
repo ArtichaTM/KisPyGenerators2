@@ -800,8 +800,10 @@ class TaskFormalLanguage(metaclass=TaskMeta):
 
     @classmethod
     def init_values(cls) -> Generator[tuple[str, str], None, None]:
-        yield ('TaskFormalLanguage',)
+        yield 'TaskFormalLanguage', 'aA', 'Aa'
 
+    def save(self) -> tuple[str, ...]:
+        return type(self).__qualname__, self.left, self.right
 
 # class TaskTEMPLATE(metaclass=TaskMeta):
 #     complexity = 5

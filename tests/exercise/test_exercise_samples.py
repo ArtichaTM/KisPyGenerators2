@@ -15,8 +15,8 @@ class TestTaskRange(TestCase):
         if cl_password is None:
             self.skipTest("Can't find task TaskPassword")
         e = Exercise([
-            cl_range(*next(cl_range.init_values())),
-            cl_password(*next(cl_password.init_values()))
+            cl_range(next(cl_range.init_values())),
+            cl_password(next(cl_password.init_values()))
         ])
         self.assertEqual(cl_range.complexity + cl_password.complexity, e.complexity)
 
@@ -45,8 +45,8 @@ class TestTaskRange(TestCase):
         if cl_concat is None:
             self.skipTest("Can't find task TaskConcat")
         e = Exercise([
-            cl_range(*next(cl_range.init_values())),
-            cl_concat(*next(cl_concat.init_values()))
+            cl_range(next(cl_range.init_values())),
+            cl_concat(next(cl_concat.init_values()))
         ])
         self.assertEqual(cl_range.complexity + cl_concat.complexity, e.complexity)
 
@@ -76,8 +76,8 @@ class TestTaskRange(TestCase):
         if cl_calculator is None:
             self.skipTest("Can't find task TaskCalculator")
         e = Exercise([
-            cl_range(*next(cl_range.init_values())),
-            cl_calculator(*next(cl_calculator.init_values()))
+            cl_range(next(cl_range.init_values())),
+            cl_calculator(next(cl_calculator.init_values()))
         ])
         self.assertEqual(cl_range.complexity + cl_calculator.complexity, e.complexity)
 
@@ -92,9 +92,9 @@ class TestTaskRange(TestCase):
         if cl_calculator is None:
             self.skipTest("Can't find task TaskCalculator")
         e = Exercise([
-            cl_range(*next(cl_range.init_values())),
-            cl_password(*next(cl_password.init_values())),
-            cl_calculator(*next(cl_calculator.init_values()))
+            cl_range(next(cl_range.init_values())),
+            cl_password(next(cl_password.init_values())),
+            cl_calculator(next(cl_calculator.init_values()))
         ])
 
         def gen():
@@ -142,8 +142,8 @@ class TestTaskRange(TestCase):
         if cl_calculator is None:
             self.skipTest("Can't find task TaskCalculator")
         e = Exercise([
-            cl_calculator(*next(cl_calculator.init_values())),
-            cl_calculator(*next(cl_calculator.init_values()))
+            cl_calculator(next(cl_calculator.init_values())),
+            cl_calculator(next(cl_calculator.init_values()))
         ])
 
         def gen():
